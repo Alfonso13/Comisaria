@@ -1,0 +1,22 @@
+{
+  "name": "components",
+  "description": "application PNC",
+  "main": "",
+  "authors": [
+    "diseño de sistemas"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "materialize": "^0.97.7",
+    "socket.io-client": "^1.4.8"
+  }
+}

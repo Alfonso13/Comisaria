@@ -1,0 +1,24 @@
+doctype html
+html
+	head
+		title Policia
+		link(rel='stylesheet', href='/bower_components/materialize/dist/css/materialize.css')
+		link(rel='stylesheet', href='/css/app.css')
+	body
+		include includes/header.jade
+		div.row(style="margin-top: 1em;")
+			h2 PNC
+
+		div(class="fixed-action-btn vertical click-to-toggle")
+			a(class="btn-floating btn-large red" style="font-size: 2em;") +
+			ul
+				li
+					a(class="btn-floating red" style="width: 45px; border-radius: 0;" href="/user/notifier")#notifier Delito
+				li
+					a(class="btn-floating red" style="width: 45px; border-radius: 0;" href="/user/chat")#chat Chat
+		script(src='/bower_components/jquery/dist/jquery.js')
+		script(src='/bower_components/materialize/dist/js/materialize.js')
+		script(src='/bower_components/socket.io-client/socket.io.js')
+		script(src='/js/gmaps.js')
+		script(src='/js/app.js')
+		script(src='/js/globals.js')

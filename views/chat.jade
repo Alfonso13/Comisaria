@@ -1,0 +1,41 @@
+doctype html
+html
+	head
+		title Policia
+		link(rel='stylesheet', href='/bower_components/materialize/dist/css/materialize.css')
+		link(rel='stylesheet', href='/css/app.css')
+	body
+		include includes/header.jade
+		section.container
+			h4 Chat
+			div.row#container-chat
+				
+			div.row.local
+				div(class="col s11 m8 offset-m2 l6 offset-l3")
+					div(class="card-panel grey lighten-5 z-depth-1") 
+						div(class="row valign-wrapper")
+							div(class="col s3")
+								img(src="/images/alfonso.png" alt="" class="circle responsive-img")
+							div(class="col s10")
+								h5(style="font-weight: 600;").no-margin Alfonso
+								span(class="black-text") This is a square image. Add the "circle" class to it to make it appear circular.
+			div.row.destination
+				div(class="col s11 m8 offset-m2 l6 offset-l3")
+					div(class="card-panel blue white-text z-depth-1") 
+						div(class="row valign-wrapper")
+							div(class="col s12") 
+								h5(style="font-weight: 600;").no-margin Alfonso
+								span This is a square image. Add the "circle" class to it to make it appear circular.  
+
+			div.row
+				textarea(class="materialize-textarea no-margin" name="message")#message
+				a(href="#").waves-effect.waves-light.btn.red.send-message ENVIAR
+
+		
+		
+		script(src='/bower_components/jquery/dist/jquery.js')
+		script(src='/bower_components/materialize/dist/js/materialize.js')
+		script(src='/bower_components/socket.io-client/socket.io.js')
+		script(src='/js/gmaps.js')
+		script(src='/js/app.js')
+		script(src='/js/globals.js')

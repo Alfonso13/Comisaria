@@ -1,0 +1,49 @@
+doctype html
+html
+	head
+		title Policia
+		link(rel='stylesheet', href='/bower_components/materialize/dist/css/materialize.css')
+		link(rel='stylesheet', href='/css/app.css')
+	body
+		div.row
+			div.container
+				h4 Información de Denuncia
+				form(name="form_denuncia")#form-denuncia
+					div.row
+						div.input-field
+							label Dirección
+							input(type="text" name="direction" data-error="Requerido" required).validate
+						div.input-field
+							label Descripción
+							input(type="text" name="description" data-error="Requerido" required).validate
+						div.input-field
+							label Fecha
+							input(type="date" name="date" required).active
+						div.input-field
+							label Observación
+							textarea(class="materialize-textarea no-margin" name="observation")
+			div
+				div#map
+				div.center-align
+					a(class="waves-effect waves-light btn red")#locate LOCALIZARME
+				div(style="margin: 1em 0;")
+					h4.center-align Coordenadas
+					div
+						p Latitud:
+							strong(style="margin-left: 4px;")#latitud
+						input(type="hidden" name="latitude" required)#latitude-input
+					div
+						p Longitud: 
+							strong(style="margin-left: 4px;")#longitud
+						input(type="hidden" name="longitude" required)#longitude-input
+				div.center-align(style="margin-top: 1em;")
+					button(class="waves-effect waves-light btn red submit" type="submit" name="action")#save ENVIAR DENUNCIA
+		
+		script(src='/bower_components/jquery/dist/jquery.js')
+		script(src='/bower_components/materialize/dist/js/materialize.js')
+		script(src='/bower_components/jquery.serializeJSON/jquery.serializejson.js')
+		script(src='/bower_components/jquery-validation/dist/jquery.validate.js')
+		script(src='/bower_components/socket.io-client/socket.io.js')
+		script(src="//maps.google.com/maps/api/js?sensor=true&key=AIzaSyCHwwNb-e6Sk8CbsUG2t6OsOsPHOtXPoUc")
+		script(src='/js/gmaps.js')
+		script(src='/js/app.js')

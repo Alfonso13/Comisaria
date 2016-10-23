@@ -1,0 +1,7 @@
+#map {
+	height: 490px;
+	margin: 1em 0;
+}
+.no-margin {
+	margin: 0 !important;
+}

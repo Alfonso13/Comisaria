@@ -1,0 +1,23 @@
+{
+  "name": "comisaria",
+  "version": "1.0.0",
+  "description": "aplicación para PNC",
+  "main": "index.js",
+  "scripts": {
+    "start": "mongod | mongo comisaria  | supervisor index.js"
+  },
+  "keywords": [
+    "PNC"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "cookie-parser": "^1.4.3",
+    "express": "^4.14.0",
+    "express.io": "^1.1.13",
+    "jade": "^1.11.0",
+    "mongoose": "^4.6.2",
+    "socket.io": "^1.4.8"
+  }
+}
