@@ -4,7 +4,7 @@
   "description": "aplicación para PNC",
   "main": "index.js",
   "scripts": {
-    "start": "mongod | mongo comisaria  | supervisor index.js"
+    "start": "mongod | supervisor index.js"
   },
   "keywords": [
     "PNC"
@@ -12,12 +12,20 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "bcrypt": "^0.8.7",
+    "bluebird": "^3.4.6",
     "body-parser": "^1.15.2",
     "cookie-parser": "^1.4.3",
     "express": "^4.14.0",
+    "express-session": "^1.14.1",
     "express.io": "^1.1.13",
+    "helmet": "^2.3.0",
     "jade": "^1.11.0",
     "mongoose": "^4.6.2",
+    "mongoose-auto-increment": "^5.0.1",
     "socket.io": "^1.4.8"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1"
   }
 }

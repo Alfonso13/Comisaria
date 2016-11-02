@@ -1,0 +1,24 @@
+doctype html
+html
+	head
+		title Policia
+		link(rel='stylesheet', href='/bower_components/materialize/dist/css/materialize.css')
+		link(rel='stylesheet', href='/css/app.css')
+	body
+		section.container
+			figure.center-align
+				img(src='/images/pnc.png').responsive-img
+			form#form-login
+				div.row
+					div.input-field
+						label(name="user") Usuario
+						input(type="text" name="user")
+					div.input-field
+						label Contraseña
+						input(type="password" name="password")
+					p.no-margin.center-align
+						a(class="waves-effect waves-light btn red")#login Entrar
+		script(src='/bower_components/jquery/dist/jquery.js')
+		script(src='/bower_components/materialize/dist/js/materialize.js')
+		script(src='/bower_components/jquery.serializeJSON/jquery.serializejson.js')
+		script(src="/js/login.js")

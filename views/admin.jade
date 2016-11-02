@@ -5,37 +5,35 @@ html
 		link(rel='stylesheet', href='/bower_components/materialize/dist/css/materialize.css')
 		link(rel='stylesheet', href='/css/app.css')
 	body
-		include includes/add_police.jade
-		header
-			ul#dropdown1.dropdown-content
-				li
-					a(href="#").add-police Agregar Policía
-				li
-					a(href="#").logout Salir
-			nav.yellow
-				div.nav-wrapper
-					a(href="#" class='brand-logo' style='width: 50px;margin-left: 0.5em;')
-						img(src='/images/pnc.png').responsive-img
-					ul#nav-mobile(class='right hide-on-med-and-down')
-						li
-							a(href='#' data-activates="dropdown1").yellow.darken-4.dropdown-button= user
-		div.row
-			div(class="col s4")
-				h5 Denuncias
-				div.row
-				ul(style="height: 500px;overflow-y: scroll;").collection#list-denuncias
-					each denuncia in denuncias.reverse()
-						li.collection-item
-							span.title= denuncia.description
-							p= denuncia.direction
-							p= denuncia.date
-							p= denuncia.observation
-							a(class="waves-effect btn") MAPA
-			div(class="col s8")
-				div
-					h5 Mapa
-					div#map
+		include includes/sidenav.jade
+		main(style="padding-left: 250px;")
+			include includes/header.jade
+			div.row
+				div(class="col s4")
+					h5 Denuncias
+					div.row
+						ul(style="height: 500px;overflow-y: scroll;").collection#list-denuncias
+							each denuncia in denuncias.reverse()
+								li.collection-item
+									span.title.no-margin
+										strong Descripción: 
+										= denuncia.description
+									p.no-margin
+										strong Dirección: 
+										= denuncia.address
+									p.no-margin
+										strong Fecha: 
+										= denuncia.date
+									p.no-margin
+										strong Observación: 
+										= denuncia.observation
+									a(class="waves-effect btn attend") ATENDER
+				div(class="col s8")
+					div
+						h5 Mapa
+						div#map
 		script(src='/bower_components/jquery/dist/jquery.js')
+		script(src='/bower_components/jquery.cookie/jquery.cookie.js')
 		script(src='/bower_components/materialize/dist/js/materialize.js')
 		script(src="//maps.google.com/maps/api/js?sensor=true&key=AIzaSyCHwwNb-e6Sk8CbsUG2t6OsOsPHOtXPoUc")
 		script(src='/bower_components/socket.io-client/socket.io.js')

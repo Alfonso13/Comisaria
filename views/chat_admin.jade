@@ -1,0 +1,70 @@
+doctype html
+html
+	head
+		title Admin
+		link(rel='stylesheet', href='/bower_components/materialize/dist/css/materialize.css')
+		link(rel='stylesheet', href='/css/app.css')
+	body
+		include includes/sidenav.jade
+		main(style="padding-left: 250px;")
+			include includes/header.jade
+			section
+				div.row
+					div.col.s4
+						h4 Listado de Policías
+						div.list-agents-chat
+							div
+								ul.collection#list-agents-chat
+									each agent in agents
+										li.collection-item.avatar(data-id= String(agent._id))
+											img(src="/images/alfonso.png").circle
+											span.title(style="font-weight: bold;")= agent.name
+											div
+												a(class="waves-effect waves-light btn blue lighten-1 send-agent-message" style="font-size: 0.8em; padding: 0 1em; margin-top: 0em;") ENVIAR MENSAJE
+								//- li.collection-item.avatar
+								//- 	img(src="/images/alfonso.png").circle
+								//- 	span.title(style="font-weight: bold;") Alfonso Piedrasanta
+								//- 	a(class="waves-effect waves-light btn blue lighten-1" style="font-size: 0.8em; padding: 0 1em; margin-top: 0em;") ENVIAR MENSAJE
+								//- li.collection-item.avatar
+								//- 	img(src="/images/alfonso.png").circle
+								//- 	span.title(style="font-weight: bold;") Alfonso Piedrasanta
+								//- 	a(class="waves-effect waves-light btn blue lighten-1" style="font-size: 0.8em; padding: 0 1em; margin-top: 0em;") ENVIAR MENSAJE
+					div.col.s8
+						p(style="margin-bottom: 0;") Mensajes enviados para:
+						div.content-agent-message(style="margin-top: 1em;")#chip
+							div.chip
+								| Todos
+								// img(src="/images/alfonso.png", alt="Contact Person") 
+						div#container-chat(style="height: 350px;overflow-x: hidden;overflow-y: scroll;")
+							div#real-container-chat
+								
+						div
+							textarea(class="materialize-textarea no-margin" style="background: #efefef;" name="message")#message
+							a(href="#").waves-effect.waves-light.btn.red.send-message ENVIAR
+				//- 	div.row.local(style="margin-bottom: 0; padding-bottom: 0;")
+				//- 		div(class="col s11 m8 offset-m2 l6 offset-l3")
+				//- 			div(class="card-panel white" style="box-shadow: none;margin: 0;padding: 0;") 
+				//- 				div(class="row valign-wrapper")
+				//- 					div(class="col s10 red white-text" style="padding: 0.5em; border-radius: 8px;")
+				//- 						h5(style="font-weight: 600;").no-margin Alfonso
+				//- 						span This is a square image. Add the "circle" class to it to make it appear circular.
+				//- 					div(class="col s3")
+				//- 						img(src="/images/alfonso.png" alt="" class="circle responsive-img")
+				//- 	div.row.destination
+				//- 		div(class="col s11 m8 offset-m2 l6 offset-l3")
+				//- 			div(class="card-panel white" style="box-shadow: none;margin: 0;padding: 0;") 
+				//- 				div(class="row valign-wrapper")
+				//- 					div(class="col s3")
+				//- 						img(src="/images/alfonso.png" alt="" class="circle responsive-img")
+				//- 					div(class="col s10 blue white-text" style="padding: 0.5em; border-radius: 8px;") 
+				//- 						h5(style="font-weight: 600;").no-margin Alfonso
+				//- 						span This is a square image. Add the "circle" class to it to make it appear circular.  
+
+				
+
+		script(src='/bower_components/jquery/dist/jquery.js')
+		script(src='/bower_components/materialize/dist/js/materialize.js')
+		script(src='/bower_components/socket.io-client/socket.io.js')
+		script(src='/bower_components/jquery.serializeJSON/jquery.serializejson.js')
+		script(src='/js/admin.js')
+		script(src='/js/globals.js')

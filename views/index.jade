@@ -7,7 +7,15 @@ html
 	body
 		include includes/header.jade
 		div.row(style="margin-top: 1em;")
-			h2 PNC
+			section.container
+				h4.no-margin(style="font-weight: 600;font-size: 1.8em;") Agente Policial
+				p.no-margin(style="font-weight: 300; color: #AAA;font-size: 1.8em;") Alfonso Piedrasanta
+				br
+				div.divider
+				br
+				a(class="waves-effect waves-light btn red") Actualizar Ubicación
+				br
+				p.no-margin(style="color: #AAA;") Es recomendable que actualices tu ubicación cada 10 minutos
 
 		div(class="fixed-action-btn vertical click-to-toggle")
 			a(class="btn-floating btn-large red" style="font-size: 2em;") +
@@ -16,6 +24,8 @@ html
 					a(class="btn-floating red" style="width: 45px; border-radius: 0;" href="/user/notifier")#notifier Delito
 				li
 					a(class="btn-floating red" style="width: 45px; border-radius: 0;" href="/user/chat")#chat Chat
+		
+
 		script(src='/bower_components/jquery/dist/jquery.js')
 		script(src='/bower_components/materialize/dist/js/materialize.js')
 		script(src='/bower_components/socket.io-client/socket.io.js')

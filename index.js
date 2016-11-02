@@ -4,28 +4,70 @@ const server = express();
 const path = require('path');
 const api = express.Router();
 const mongoose = require('mongoose');
+const autoIncrement = require('mongoose-auto-increment');
+
 const dbURI = 'mongodb://localhost/comisaria';
 const Denuncia = require('./models/denuncia');
 const Usuario = require('./models/usuario');
+const Message = require('./models/message');
+
 const _server = server.listen(3000, function () {
 	console.log("Listen on port 3000");
 });
-
+const session = require('express-session');
+const cookieParser = require('cookie-parser');
+const bcrypt = require('bcrypt');
 const io = require('socket.io')(_server);
+const auth = require('./auth/auth');
 
 require('./sockets')(io);
 
 server.use(express.static(path.join(__dirname, 'public')));
 server.use(bodyParser.json());
 server.use(bodyParser.urlencoded({extended: true}));
+server.use(cookieParser());
+server.use(session({
+	secret: 'comisaria_secret',
+	resave: false,
+	saveUninitialized: true,
+	cookie: {secure: true}
+}));
 
 server.set('views', path.join(__dirname, 'views'));
 server.set('view engine', 'jade');
 
+mongoose.Promise = global.Promise;
 mongoose.connect(dbURI);
 
+//autoIncrement.initialize(mongoose);
+
 mongoose.connection.on('connected', function () {
-	console.log("Connected");
+	console.log("Conectado a MongoDB");
+});
+
+api.get('/user/:id', function getUser(req, res) {
+	var id = req.params.id;
+	Usuario.findOne({_id: id}, function (error, user) {
+		res.json({user: user});
+	});
+});
+
+api.post('/user', function postUser(req, res) {
+	var user = new Usuario({
+		role: "agent",
+		name: req.body.name,
+		lastname: req.body.lastname,
+		state: 1,
+		currentLocation: {},
+		password: req.body.password,
+		entry: req.body.entry
+	});
+	user.save(function (error, user){
+		if(error) {
+			return res.json({success: false});
+		}
+		return res.json({success: true,user: user});
+	});
 });
 
 api.post('/complaint', function _complaint(req, res) {
@@ -57,28 +99,85 @@ api.get('/complaint', function _complaint(req, res) {
 	});
 });
 
-server.get('/', function index(req, res) {
-	res.redirect('/user');
+api.get('/logout', function logout(req, res) {
+	res.clearCookie('id');
+	res.clearCookie('role');
+	res.clearCookie('user');
+	res.send("Ok");
+	//res.redirect('/login');
 });
 
-server.get('/admin', function admin(req, res) {
-	Denuncia.find().exec(function (error, data) {
+api.get('/authenticate/:user', function authenticate(req, res) {
+	var params = JSON.parse(req.params.user);
+
+	Usuario.findOne({name: params.user, password: params.password}, function (error, data) {
+		if(error) {
+			res.json({
+				error: "error"
+			});
+		}
+		else {
+			res.cookie('id', data._id);
+			res.cookie('role', data.role);
+			res.cookie('user', data.name);
+			res.json({
+				success: true,
+				user: data
+			});
+		}
+	});
+});
+
+server.get('/admin/crimes', auth.authNoSession, function crimes(req, res) {
+	Denuncia.find({}, function (error, data) {
 		res.render('admin', {
-			denuncias: data,
-			user: "alfonso"
+			denuncias: data
 		});
 	});
 });
 
-server.get('/user/chat', function chat(req, res) {
-	res.render('chat');
+/*var admin = new Usuario({
+	role: "admin",
+	name: "Kevin",
+	lastname: "Galindo",
+	state: 1,
+	currentLocation: {
+		latitude: 14.539786, 
+		longitude: -91.678999
+	},
+	password: "kevin123",
+	entry: '01/01/2014'
+});*/
+
+server.get('/admin/agents', auth.authNoSession, function agents(req, res) {
+	Usuario.find({role: 'agent'}).exec(function (error, data) {	
+		res.render('agents', {
+			agents: data
+		});
+	});
 });
 
-server.get('/user', function user(req, res){
+server.get('/user/chat', auth.authNoSession, function chat(req, res) {
+		res.render('chat');
+});
+
+server.get('/admin/chat', auth.authNoSession, function chatAdmin(req, res) {
+	Usuario.find({role: 'agent'}).exec(function (error, data) {
+		res.render('chat_admin', {
+			agents: data
+		});
+	});
+});
+
+server.get('/user', auth.authNoSession, function user(req, res){
 	res.render('index');
 });
 
-server.get('/user/notifier', function notifier(req, res) {
-	res.render('notifier');
+server.get('/login', auth.authUser, function login(req, res) {
+	res.render('login');
+});
+
+server.get('/user/notifier', auth.authNoSession, function notifier(req, res) {
+	res.render('notifier', {});
 });
 server.use('/api', api);

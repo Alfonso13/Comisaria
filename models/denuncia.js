@@ -8,7 +8,8 @@ const schemaDenuncia = new utils.Schema({
 	location: {
 		lat: String,
 		lng: String
-	}
+	},
+	state: Number
 });
 const Denuncia = utils.mongoose.model('Denuncia', schemaDenuncia);
 

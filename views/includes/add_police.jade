@@ -1,7 +1,19 @@
 div#add_police.modal
 	div.modal-content
 		h4 Nuevo Agente Policial
-		
+		form#form-new-agent
+			div.input-field
+				label Nombre
+				input(type="text" name="name")
+			div.input-field
+				label Apellido
+				input(type="text" name="lastname")
+			div.input-field
+				label Contraseña
+				input(type="password" name="password")
+			div.input-field
+				label Fecha Ingreso
+				input(type="date" class="datepicker" name="entry")
 	div.modal-footer
-		a(href="#").modal-action.waves-effect.waves-green.btn-flat Crear
-		a(href="#").modal-action.modal-close.waves-effect.waves-green.btn-flat Cerrar 
+		a(href="#").modal-action.modal-close.waves-effect.waves-green.btn-flat Cerrar
+		a(href="#").modal-action.waves-effect.red.btn-flat#btn-save-police.white-text Crear

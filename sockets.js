@@ -7,9 +7,17 @@ function Sockets(io) {
 			console.log("Hemos llegado a denuncia");
 			socket.broadcast.emit('denuncia comisaria', data);
 		});
-		socket.on('new message', function _new_message() {
-			
+		socket.on('message admin', function _new_message(data) {  //Escucha algún mensaje nuevo que venga del admin
+			socket.broadcast.emit('message agent', {  //Envía el mensaje a todos los agentes
+				message: data.message,
+				username: data.username,
+				id: data.id
+			});
 		});
+		socket.on('message private admin', function private(data) {
+			socket.broadcast.emit('message private admin', {message: data.message, username: data.username});
+		});
+
 		socket.on('typing', function typing() {
 			
 		});

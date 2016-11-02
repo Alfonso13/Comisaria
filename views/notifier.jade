@@ -12,13 +12,13 @@ html
 					div.row
 						div.input-field
 							label Dirección
-							input(type="text" name="direction" data-error="Requerido" required).validate
+							input(type="text" name="address" data-error="Requerido" required).validate
 						div.input-field
 							label Descripción
 							input(type="text" name="description" data-error="Requerido" required).validate
 						div.input-field
 							label Fecha
-							input(type="date" name="date" required).active
+							input(type="date" name="date" required class="datepicker").active
 						div.input-field
 							label Observación
 							textarea(class="materialize-textarea no-margin" name="observation")
