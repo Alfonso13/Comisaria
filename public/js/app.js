@@ -1,6 +1,6 @@
 $(document).ready(function _load() {
-	const socket = io.connect();
-
+	const api = "http://67.205.154.65:3000";
+	const socket = io.connect(api);
 	var $inputMessage = $("#message");
 	$(".datepicker").pickadate();
 
@@ -83,7 +83,7 @@ $(document).ready(function _load() {
 				lat: $("#latitude-input").val(),
 				lng: $("#longitude-input").val()
 			};
-			var xhr = $.post('/api/complaint', serialize);
+			var xhr = $.post(api + '/api/complaint', serialize);
 			xhr
 			.done(function done(response) {
 				document.form_denuncia.reset();

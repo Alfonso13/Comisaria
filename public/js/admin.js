@@ -1,4 +1,6 @@
 $(document).ready(function ready() {
+	const api = "http://67.205.154.65:3000";
+	
 	if($("#map").length > 0) {
 		var map = new GMaps({
 			div: '#map',
@@ -6,7 +8,26 @@ $(document).ready(function ready() {
 	  		lng: -91.677297,
 	  		zoom: 14
 		});
+
+		var all = $.get(api + '/api/complaint');
+		all
+		.done(function (response) {
+			var denuncias = response.denuncias;
+			denuncias.forEach(function (denuncia) {
+				if(denuncia.location) {
+					map.addMarker({
+						lat: denuncia.location.lat,
+						lng: denuncia.location.lng
+					});
+				}
+			});
+		})
+		.fail(function () {
+			console.log(arguments);
+		});
 	}
+	const socket = io.connect(api);
+	//const socket = io.connect();
 	var $inputMessage = $("#message");
 	var getId = function getId() {
 		var id = JSON.parse(localStorage["user"])._id;
@@ -41,7 +62,6 @@ $(document).ready(function ready() {
 		}
 	});
 
-	const socket = io.connect();	
 	socket.on('message private admin', function newMessage(data) {
 		var $message = '<div class="row destination"><div class="col s11 m8 offset-m2 l6 offset-l3"><div style="box-shadow: none;margin: 0;padding: 0;" class="card-panel white"> <div class="row valign-wrapper"><div class="col s3"><img src="/images/alfonso.png" alt="" class="circle responsive-img"></div><div style="padding: 0.5em; border-radius: 8px;" class="col s10 blue white-text"> <h5 style="font-weight: 600;" class="no-margin">' + data.username + '</h5><span>' + data.message + '</span></div></div></div></div></div>'
 		$("#real-container-chat").append($message);
@@ -64,7 +84,7 @@ $(document).ready(function ready() {
 	$(document).on('click', '.send-agent-message', function click() {
 		var me = this;
 		var id = $(me).parents("li.collection-item").attr('data-id');
-		var xhr = $.get('/api/user/'+id);
+		var xhr = $.get(api + '/api/user/'+id);
 		xhr
 		.done(function done(response) {
 			var user = response.user;
@@ -82,7 +102,7 @@ $(document).ready(function ready() {
 	});
 	$("#btn-save-police").on('click', function click() {
 		var serialize = $("#form-new-agent").serializeJSON();
-		var xhr = $.post('/api/user', serialize);
+		var xhr = $.post(api + '/api/user', serialize);
 		xhr
 		.done(function done(response) {
 			if(response.success) {
@@ -96,20 +116,5 @@ $(document).ready(function ready() {
 			console.log(arguments);
 		});
 	});
-	var all = $.get('/api/complaint');
-	all
-	.done(function (response) {
-		var denuncias = response.denuncias;
-		denuncias.forEach(function (denuncia) {
-			if(denuncia.location) {
-				map.addMarker({
-					lat: denuncia.location.lat,
-					lng: denuncia.location.lng
-				});
-			}
-		});
-	})
-	.fail(function () {
-		console.log(arguments);
-	});
+
 });

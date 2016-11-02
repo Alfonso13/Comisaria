@@ -4,6 +4,7 @@ const server = express();
 const path = require('path');
 const api = express.Router();
 const mongoose = require('mongoose');
+const cors = require('cors');
 const autoIncrement = require('mongoose-auto-increment');
 
 const dbURI = 'mongodb://localhost/comisaria';
@@ -16,7 +17,7 @@ const _server = server.listen(3000, function () {
 });
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
-const bcrypt = require('bcrypt');
+//const bcrypt = require('bcrypt');
 const io = require('socket.io')(_server);
 const auth = require('./auth/auth');
 
@@ -32,7 +33,7 @@ server.use(session({
 	saveUninitialized: true,
 	cookie: {secure: true}
 }));
-
+server.use(cors());
 server.set('views', path.join(__dirname, 'views'));
 server.set('view engine', 'jade');
 
