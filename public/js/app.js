@@ -1,5 +1,5 @@
 $(document).ready(function _load() {
-	const api = "http://67.205.154.65:3000";
+	const api = "https://67.205.154.65:3000";
 	const socket = io.connect(api);
 	//const socket = io.connect();
 	var $inputMessage = $("#message");

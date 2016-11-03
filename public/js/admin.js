@@ -1,5 +1,5 @@
 $(document).ready(function ready() {
-	const api = "http://67.205.154.65:3000";
+	const api = "https://67.205.154.65:3000";
 	
 	if($("#map").length > 0) {
 		var map = new GMaps({
