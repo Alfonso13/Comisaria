@@ -10,6 +10,7 @@ $(document).ready(function ready() {
 		});
 
 		var all = $.get(api + '/api/complaint');
+		//var all = $.get('/api/complaint');
 		all
 		.done(function (response) {
 			var denuncias = response.denuncias;
@@ -26,8 +27,8 @@ $(document).ready(function ready() {
 			console.log(arguments);
 		});
 	}
-	const socket = io.connect(api);
-	//const socket = io.connect();
+	//const socket = io.connect(api);
+	const socket = io.connect();
 	var $inputMessage = $("#message");
 	var getId = function getId() {
 		var id = JSON.parse(localStorage["user"])._id;
@@ -84,7 +85,9 @@ $(document).ready(function ready() {
 	$(document).on('click', '.send-agent-message', function click() {
 		var me = this;
 		var id = $(me).parents("li.collection-item").attr('data-id');
+		
 		var xhr = $.get(api + '/api/user/'+id);
+		//var xhr = $.get('/api/user/'+id);
 		xhr
 		.done(function done(response) {
 			var user = response.user;
@@ -103,6 +106,7 @@ $(document).ready(function ready() {
 	$("#btn-save-police").on('click', function click() {
 		var serialize = $("#form-new-agent").serializeJSON();
 		var xhr = $.post(api + '/api/user', serialize);
+		//var xhr = $.post('/api/user', serialize);
 		xhr
 		.done(function done(response) {
 			if(response.success) {

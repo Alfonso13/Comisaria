@@ -6,20 +6,32 @@ const api = express.Router();
 const mongoose = require('mongoose');
 const cors = require('cors');
 const autoIncrement = require('mongoose-auto-increment');
-
+const https = require('https');
 const dbURI = 'mongodb://localhost/comisaria';
 const Denuncia = require('./models/denuncia');
 const Usuario = require('./models/usuario');
 const Message = require('./models/message');
 
-const _server = server.listen(3000, function () {
+const fs = require('fs');
+const options = {
+	key: fs.readFileSync('key.pem'),
+	cert: fs.readFileSync('cert.pem')
+};
+
+const httpsServer = https.createServer(options, server);
+
+const _server = httpsServer.listen(3000, function () {
 	console.log("Listen on port 3000");
 });
+
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 //const bcrypt = require('bcrypt');
 const io = require('socket.io')(_server);
 const auth = require('./auth/auth');
+
+
+
 
 require('./sockets')(io);
 
