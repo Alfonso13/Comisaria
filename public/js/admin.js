@@ -2,6 +2,7 @@ $(document).ready(function ready() {
 	const api = "https://67.205.154.65:80";
 	
 	if($("#map").length > 0) {
+
 		var map = new GMaps({
 			div: '#map',
 			lat: 14.537558,
@@ -27,8 +28,11 @@ $(document).ready(function ready() {
 			console.log(arguments);
 		});
 	}
-	//const socket = io.connect(api);
-	const socket = io.connect();
+
+	const socket = io.connect(api, {
+		secure: true
+	});
+	//const socket = io.connect();
 	var $inputMessage = $("#message");
 	var getId = function getId() {
 		var id = JSON.parse(localStorage["user"])._id;
