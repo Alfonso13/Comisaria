@@ -1,5 +1,5 @@
 $(document).ready(function ready() {
-	const api = "https://67.205.154.65:80";
+	const api = "https://67.205.154.65:443";
 	
 	if($("#map").length > 0) {
 
