@@ -1,5 +1,5 @@
 $(document).ready(function ready() {
-	const api = "https://67.205.154.65:3000";
+	const api = "https://67.205.154.65:80";
 	
 	if($("#map").length > 0) {
 		var map = new GMaps({
@@ -9,8 +9,8 @@ $(document).ready(function ready() {
 	  		zoom: 14
 		});
 
-		var all = $.get(api + '/api/complaint');
-		//var all = $.get('/api/complaint');
+		//var all = $.get(api + '/api/complaint');
+		var all = $.get('/api/complaint');
 		all
 		.done(function (response) {
 			var denuncias = response.denuncias;

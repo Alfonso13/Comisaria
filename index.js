@@ -20,8 +20,8 @@ const options = {
 
 const httpsServer = https.createServer(options, server);
 
-const _server = httpsServer.listen(3000, function () {
-	console.log("Listen on port 3000");
+const _server = httpsServer.listen(80, function () {
+	console.log("Listen on port 80");
 });
 
 const session = require('express-session');
@@ -29,8 +29,6 @@ const cookieParser = require('cookie-parser');
 //const bcrypt = require('bcrypt');
 const io = require('socket.io')(_server);
 const auth = require('./auth/auth');
-
-
 
 
 require('./sockets')(io);

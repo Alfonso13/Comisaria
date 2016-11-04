@@ -1,6 +1,8 @@
 $(document).ready(function _load() {
-	const api = "https://67.205.154.65:3000";
-	const socket = io.connect(api);
+	const api = "https://67.205.154.65:80";
+	const socket = io.connect(api, {
+		secure: true
+	});
 	//const socket = io.connect();
 	var $inputMessage = $("#message");
 	$(".datepicker").pickadate();
