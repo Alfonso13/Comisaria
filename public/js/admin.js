@@ -107,8 +107,7 @@ $(document).ready(function ready() {
 	};
 	function sendMessage() {
 		var message = $inputMessage.val().trim();
-		//var name = JSON.parse(localStorage["user"]).name;
-		var name = "Alfonso";
+		var name = JSON.parse(localStorage["user"]).name;
 		if(message != "") {
 			//var $message = "<div class='row local'><div class='col s11 m8 offset-m2 l6 offset-l3'> <div class='card-panel grey lighten-5 z-depth-1'> <div class='row valign-wrapper'> <div class='col s3'> <img src='/images/alfonso.png' alt='' class='circle responsive-img' /> </div> <div class='col s10'> <h5 class='no-margin' style='font-weight: 600;'>" + name + "</h5><span class='black-text'> " + message + " </span> </div> </div> </div> </div></div>"
 			var $message = '<div style="margin-bottom: 0; padding-bottom: 0;" class="row local"><div class="col s11 m8 offset-m2 l6 offset-l3"><div style="box-shadow: none;margin: 0;padding: 0;" class="card-panel white"> <div class="row valign-wrapper"><div style="padding: 0.5em; border-radius: 8px;" class="col s10 red white-text"><h5 style="font-weight: 600;" class="no-margin">' + name + '</h5><span>' + message + '</span></div><div class="col s3"><img src="/images/alfonso.png" alt="" class="circle responsive-img"></div></div></div></div></div>';
