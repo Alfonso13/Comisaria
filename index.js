@@ -21,15 +21,15 @@ const options = {
 	cert: fs.readFileSync('cert.pem')
 };
 
-/*const httpsServer = https.createServer(options, server);
+const httpsServer = https.createServer(options, server);
 
 const _server = httpsServer.listen(443, function () {
 	console.log("Listen on port 443");
-});*/
-
-const _server = server.listen(8080, function () {
-	console.log("Listen on port 8080");
 });
+
+/*const _server = server.listen(8080, function () {
+	console.log("Listen on port 8080");
+});*/
 
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
