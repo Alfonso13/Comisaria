@@ -6,24 +6,47 @@ html
 		link(rel='stylesheet', href='/css/app.css')
 	body
 		include includes/header.jade
+		include includes/alert.jade
+		include includes/alert_chat.jade
 		div.row(style="margin-top: 1em;")
 			section.container
 				h4.no-margin(style="font-weight: 600;font-size: 1.8em;") Agente Policial
-				p.no-margin(style="font-weight: 300; color: #AAA;font-size: 1.8em;") Alfonso Piedrasanta
+				p.no-margin(style="font-weight: 300; color: #AAA;font-size: 1.8em;")= (name + " " + lastname)
 				br
 				div.divider
 				br
-				a(class="waves-effect waves-light btn red") Actualizar Ubicación
+				a(class="waves-effect waves-light btn red")#update_location Actualizar Ubicación
 				br
 				p.no-margin(style="color: #AAA;") Es recomendable que actualices tu ubicación cada 10 minutos
+				br
+				br
+				a(class="waves-effect waves-light btn red")#apoyo52 APOYO 5-2
+		//- div.row
+		//- 	ul(style="overflow-y: scroll;height: 200px;").collection#list-denuncias
+		//- 		each theft in thefts
+		//- 			li.collection-item
+		//- 				span.title Alfonso
+						//- span.title.no-margin
+						//- 	strong Descripción: 
+						//- 	= theft.description
+						//- p.no-margin
+						//- 	strong Dirección: 
+						//- 	= theft.address
+						//- p.no-margin
+						//- 	strong Fecha: 
+						//- 	= theft.date
+						//- p.no-margin
+						//- 	strong Observación: 
+						//- 	= theft.observation
+						//- a(class="waves-effect btn attend") ATENDER
 
 		div(class="fixed-action-btn vertical click-to-toggle")
 			a(class="btn-floating btn-large red" style="font-size: 2em;") +
 			ul
 				li
-					a(class="btn-floating red" style="width: 45px; border-radius: 0;" href="/user/notifier")#notifier Delito
+					a(class="btn-floating red" style="width: 45px; border-radius: 0;")#notifier Alerta
 				li
-					a(class="btn-floating red" style="width: 45px; border-radius: 0;" href="/user/chat")#chat Chat
+					a(class="btn-floating red" style="width: 45px; border-radius: 0;")#chat Chat
 		
 
 		script(src='/bower_components/jquery/dist/jquery.js')

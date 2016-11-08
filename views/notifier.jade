@@ -11,7 +11,7 @@ html
 				form(name="form_denuncia")#form-denuncia
 					div.row
 						div.input-field
-							label Dirección
+							label Referencia
 							input(type="text" name="address" data-error="Requerido" required).validate
 						div.input-field
 							label Descripción
@@ -23,7 +23,6 @@ html
 							label Observación
 							textarea(class="materialize-textarea no-margin" name="observation")
 			div
-				div#map
 				div.center-align
 					a(class="waves-effect waves-light btn red")#locate LOCALIZARME
 				div(style="margin: 1em 0;")
@@ -38,7 +37,6 @@ html
 						input(type="hidden" name="longitude" required)#longitude-input
 				div.center-align(style="margin-top: 1em;")
 					button(class="waves-effect waves-light btn red submit" type="submit" name="action")#save ENVIAR DENUNCIA
-		
 		script(src='/bower_components/jquery/dist/jquery.js')
 		script(src='/bower_components/materialize/dist/js/materialize.js')
 		script(src='/bower_components/jquery.serializeJSON/jquery.serializejson.js')

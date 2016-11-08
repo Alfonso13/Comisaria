@@ -1,6 +1,7 @@
 $(document).ready(function _ready() {
+	const api = "https://67.205.154.65:443";
 	$(".logout").on('click', function logout() {
-		var xhr = $.get('/api/logout');
+		var xhr = $.get(api + '/api/logout');
 		xhr
 		.done(function done() {
 			window.location.href = "/login";
@@ -8,12 +9,5 @@ $(document).ready(function _ready() {
 		.fail(function fail() {
 			console.log(arguments);
 		});
-	});
-
-	const socket = io.connect('http://localhost:3000');
-	$(".send-message").on('click', function _sendMessage() {
-		var message = $("#message").val();
-		socket.emit('message', message);
-		//$("#container-chat")
 	});
 });

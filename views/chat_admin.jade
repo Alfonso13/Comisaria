@@ -15,6 +15,10 @@ html
 						div.list-agents-chat
 							div
 								ul.collection#list-agents-chat
+									li.collection-item.avatar
+										span.title(style="font-weight: bold;") General
+										div
+											a(class="waves-effect waves-light btn blue lighten-1" style="font-size: 0.8em; padding: 0 1em; margin-top: 0em;")#general_message ENVIAR MENSAJE
 									each agent in agents
 										li.collection-item.avatar(data-id= String(agent._id))
 											img(src="/images/alfonso.png").circle

@@ -1,38 +1,105 @@
 $(document).ready(function ready() {
 	const api = "https://67.205.154.65:443";
+	var map = null;
 	
 	if($("#map").length > 0) {
 
-		var map = new GMaps({
+		map = new GMaps({
 			div: '#map',
 			lat: 14.537558,
 	  		lng: -91.677297,
 	  		zoom: 14
 		});
+		var markers = [];
+		if($("#map").hasClass('map_agents')) { //Es el mapa de agentes
 
-		//var all = $.get(api + '/api/complaint');
-		var all = $.get('/api/complaint');
-		all
-		.done(function (response) {
-			var denuncias = response.denuncias;
-			denuncias.forEach(function (denuncia) {
-				if(denuncia.location) {
-					map.addMarker({
-						lat: denuncia.location.lat,
-						lng: denuncia.location.lng
-					});
+			$(document).on('click', '.item-agent', function ($event) {
+				var id = $(this).attr('data-id');
+				var _markers = map.markers;
+				var marker = null;
+				for(var i = 0 ; i < _markers.length ; i++) {
+					if(_markers[i].getTitle() == id) {
+						marker = _markers[i];
+						break;
+					}
+				}
+				if(marker.getAnimation() !== null) {
+					marker.setAnimation(null);
+				}
+				else {
+					marker.setAnimation(google.maps.Animation.BOUNCE);
 				}
 			});
-		})
-		.fail(function () {
-			console.log(arguments);
-		});
+
+			var all = $.get('/api/policemen');
+			all
+			.done(function (response) {
+				if(response.agents.forEach) {
+					response.agents.forEach(function (value, index) {
+						markers.push({
+							lat: value.currentLocation.latitude,
+							lng: value.currentLocation.longitude,
+							title: value._id,
+							animation: google.maps.Animation.DROP
+						});
+					});
+					map.addMarkers(markers);
+				}
+			})
+			.fail(function (error) {
+				console.log(error);
+			})
+		}
+
+		if($("#map").hasClass('map_alerts')) {
+			var xhr = $.get('/api/alerts');
+			xhr
+			.done(function done(response) {
+				var vehicles = response.data.vehicles;
+				var thefts = response.data.thefts;
+				var alerts = response.data.alerts;
+				var markers = [];
+				
+				if(vehicles.forEach) {
+					vehicles.forEach(function (value, index) {
+						markers.push({
+							lat: value.location.latitude,
+							lng: value.location.longitude,
+							title: value._id,
+							animation: google.maps.Animation.DROP
+						});
+					});
+				}
+				if(thefts.forEach) {
+					thefts.forEach(function (value, index) {
+						markers.push({
+							lat: value.location.latitude,
+							lng: value.location.longitude,
+							title: value._id,
+							animation: google.maps.Animation.DROP
+						});
+					});
+				}
+				if(alerts.forEach) {
+					alerts.forEach(function (value, index) {
+						markers.push({
+							lat: value.location.latitude,
+							lng: value.location.longitude,
+							title: value._id,
+							animation: google.maps.Animation.DROP
+						});
+					});
+				}
+				map.addMarkers(markers);
+			});
+		}
 	}
 
-	const socket = io.connect(api, {
+
+	/*const socket = io.connect(api, {
 		secure: true
-	});
-	//const socket = io.connect();
+	});*/
+	const socket = io.connect();
 	var $inputMessage = $("#message");
 	var getId = function getId() {
 		var id = JSON.parse(localStorage["user"])._id;
@@ -73,11 +140,28 @@ $(document).ready(function ready() {
 		$("#real-container-chat").append($message);
 	});
 
+	var parseDate = function parseDate(_date) {
+		var date = new Date(_date);
+		return date.getDate() + "/" + date.getMonth() + "/" + date.getFullYear();
+	};
+
 	socket.on('denuncia comisaria', function _connection(data) {
-		$("#list-denuncias").prepend("<li class='collection-item'><span class='title'><strong>Descripción: </strong> "+ data.description +"</span> <p class='no-margin'><strong>Dirección: </strong> "+ data.address +"</p> <p class='no-margin'><strong>Fecha: </strong> "+ data.date +"</p> <p class='no-margin'><strong>Observación: </strong>"+ data.observation +"</p> <a class='waves-effect btn'>ATENDER</a> </li>");
+		var $html;
+		var date = parseDate(data.theft.date);
+		if(data.type == 'theft_vehicle') {
+			$html = "<li class='collection-item'> <p><strong>H/R Vehículo</strong></p> <p class='no-margin'><strong>Fecha: </strong> "+ date +"</p> <p class='no-margin'><strong>Modalidad:</strong>"+ data.theft.type +"</p> <p class='no-margin'><strong>Tipo vehículo:</strong>" + data.theft.type_vehicle + " </p> <p class='no-margin'><strong>Marca: </strong>" + data.theft.brand + " </p><p class='no-margin'><strong>Color: </strong>" + data.theft.color + " </p><p class='no-margin'><strong>Placa: </strong>" + data.theft.plate + " </p><p class='no-margin'><strong>Dirección: </strong>" + data.theft.reference + "</p> <p class='no-margin'><strong>Modo: </strong> " + data.theft.mode +  " </p> <p class='no-margin'><strong>Denunciante: </strong> " + data.theft.whistleblower + " </p> <a class='waves-effect btn'>ATENDER</a> </li>";
+		}
+		if(data.type == 'theft') {
+			$html = "<li class='collection-item'> <p><strong>Robo</strong></p> <p class='no-margin'><strong>Fecha: </strong> "+ date +"</p> <p class='no-margin'><strong>Robo a:</strong>"+ data.theft.theft_to +"</p> <p class='no-margin'><strong>Dirección robo:</strong>" + data.theft.theft_reference + " </p> <p class='no-margin'><strong>Vestimenta victimario: </strong>" + data.theft.victimizer_clothing + " </p><p class='no-margin'><strong>Objeto robado: </strong>" + data.theft.stolen_object + "</p><p class='no-margin'><strong>Denunciante: </strong>" + data.theft.whistleblower + " </p><a class='waves-effect btn'>ATENDER</a> </li>";
+		}
+		if(data.type == 'alert') {
+			$html = "<li class='collection-item'> <p><strong>Alerta General</strong></p> <p class='no-margin'><strong>Dirección: </strong> "+ date +"</p> <p class='no-margin'><strong>Robo a:</strong>"+ data.theft.reference +"</p> <p class='no-margin'><strong>Descripción: </strong>" + data.theft.description + " </p><a class='waves-effect btn'>ATENDER</a> </li>";
+		}
+
+		$("#list-denuncias").prepend($html);
 		map.addMarker({
-			lat: data.location.lat,
-			lng: data.location.lng
+			lat: data.theft.location.latitude,
+			lng: data.theft.location.longitude
 		});
 	});
 	
@@ -89,10 +173,12 @@ $(document).ready(function ready() {
 
 	$(document).on('click', '.send-agent-message', function click() {
 		var me = this;
-		var id = $(me).parents("li.collection-item").attr('data-id');
 		
-		var xhr = $.get(api + '/api/user/'+id);
-		//var xhr = $.get('/api/user/'+id);
+		var id = $(me).parents("li.collection-item").attr('data-id');
+
+		
+		//var xhr = $.get(api + '/api/user/'+id);
+		var xhr = $.get('/api/user/'+id);
 		xhr
 		.done(function done(response) {
 			var user = response.user;
@@ -104,14 +190,13 @@ $(document).ready(function ready() {
 		});
 	});
 
-
 	$("#btn_add_police").on('click', function click() {
 		$("#add_police").openModal();
 	});
 	$("#btn-save-police").on('click', function click() {
 		var serialize = $("#form-new-agent").serializeJSON();
-		var xhr = $.post(api + '/api/user', serialize);
-		//var xhr = $.post('/api/user', serialize);
+		//var xhr = $.post(api + '/api/user', serialize);
+		var xhr = $.post('/api/user', serialize);
 		xhr
 		.done(function done(response) {
 			if(response.success) {
@@ -126,4 +211,24 @@ $(document).ready(function ready() {
 		});
 	});
 
+	$('#cerrar_denuncias').on('click', function cerrar() {
+		var $container = $("#container-denuncias");
+		var $me = $(this);
+		if($me.hasClass('closed')) { //Ya fue cerrado el bloque
+			$("#container-map").removeClass('s12').addClass('s8');
+			$container.animate({marginLeft: "0%"}, 1200, "swing");
+			$me.text("CERRAR").removeClass('closed');
+		}
+		else {
+			$container.animate({marginLeft: "-33.3333333333%"}, 1200, "swing", function () {
+				$("#container-map").removeClass("s8").addClass("s12");
+				$me.text("MOSTRAR").addClass('closed');
+			});
+		}
+	});
+
+	$("#general_message").on('click', function genera_chat() {
+		var html = "<div class='chip'> Todos </div>";
+		$("#chip").html(html);
+	});
 });

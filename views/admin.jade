@@ -9,29 +9,30 @@ html
 		main(style="padding-left: 250px;")
 			include includes/header.jade
 			div.row
-				div(class="col s4")
-					h5 Denuncias
+				div.left-align(style="margin-top: 8px;margin-left: 10px;margin-bottom: 8px;")
+					a(class="waves-effect waves-light btn red", style="padding: 0 0.4em;font-size: 0.8em;")#cerrar_denuncias CERRAR
+				div(class="col s4")#container-denuncias
+					h5.no-margin(style="font-size: 1em;") Denuncias
 					div.row
 						ul(style="height: 500px;overflow-y: scroll;").collection#list-denuncias
-							each denuncia in denuncias.reverse()
-								li.collection-item
-									span.title.no-margin
-										strong Descripción: 
-										= denuncia.description
-									p.no-margin
-										strong Dirección: 
-										= denuncia.address
-									p.no-margin
-										strong Fecha: 
-										= denuncia.date
-									p.no-margin
-										strong Observación: 
-										= denuncia.observation
-									a(class="waves-effect btn attend") ATENDER
-				div(class="col s8")
+							//- each denuncia in denuncias.reverse()
+								//- li.collection-item
+								//- 	span.title.no-margin
+								//- 		strong Descripción: 
+								//- 		= denuncia.description
+								//- 	p.no-margin
+								//- 		strong Dirección: 
+								//- 		= denuncia.address
+								//- 	p.no-margin
+								//- 		strong Fecha: 
+								//- 		= denuncia.date
+								//- 	p.no-margin
+								//- 		strong Observación: 
+								//- 		= denuncia.observation
+								//- 	a(class="waves-effect btn attend") ATENDER
+				div(class="col s8")#container-map
 					div
-						h5 Mapa
-						div#map
+						div#map.map_alerts
 		script(src='/bower_components/jquery/dist/jquery.js')
 		script(src='/bower_components/jquery.cookie/jquery.cookie.js')
 		script(src='/bower_components/materialize/dist/js/materialize.js')

@@ -11,6 +11,7 @@ module.exports = {
 	authNoSession: function authNoSession(req, res, next) {
 		if(!req.cookies.role) {
 			res.redirect('/login');
+			return next();
 		}
 		return next();
 	},

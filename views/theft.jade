@@ -1,0 +1,53 @@
+doctype html
+html
+	head
+		title Policia
+		link(rel='stylesheet', href='/bower_components/materialize/dist/css/materialize.css')
+		link(rel='stylesheet', href='/css/app.css')
+	body
+		include includes/header.jade
+		div.row
+			div.container
+				h5.center-align ROBO
+				form(name="form_denuncia", data-route='/api/theft')#form
+					div.row
+						div.input-field
+							select(name="theft_to")
+								option(value="Persona") Persona
+								option(value="Domicilio") Domicilio
+								option(value="Comercio") Comercio
+							label Robo a:
+						div.input-field
+							label Referencia:
+							textarea(name="theft_reference").materialize-textarea
+						div.input-field
+							label Vestimenta victimario:
+							textarea(name="victimizer_clothing").materialize-textarea
+						div.input-field
+							label Objeto robado
+							textarea(name="stolen_object").materialize-textarea
+						div.input-field
+							label Denunciante
+							textarea(name="whistleblower").materialize-textarea
+			div
+				div.center-align
+					a(class="waves-effect waves-light btn red")#locate LOCALIZARME
+				div(style="margin: 1em 0;")
+					h4.center-align Coordenadas
+					div
+						p Latitud:
+							strong(style="margin-left: 4px;")#latitud
+						input(type="hidden" name="latitude" required)#latitude-input
+					div
+						p Longitud:
+							strong(style="margin-left: 4px;")#longitud
+						input(type="hidden" name="longitude" required)#longitude-input
+				div.divider
+				div.center-align(style="margin-top: 1em;")
+					button(class="waves-effect waves-light btn red submit" type="submit" name="action")#save ENVIAR DENUNCIA		
+
+		script(src='/bower_components/jquery/dist/jquery.js')
+		script(src='/bower_components/materialize/dist/js/materialize.js')
+		script(src='/bower_components/jquery.serializeJSON/jquery.serializejson.js')
+		script(src='/bower_components/socket.io-client/socket.io.js')
+		script(src='/js/app.js')

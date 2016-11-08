@@ -4,7 +4,6 @@ function Sockets(io) {
 	io.on('connection', function (socket) {
 		console.log("Alguien se ha conectado con Sockets");
 		socket.on('denuncia', function socket_denuncia(data) {
-			console.log("Hemos llegado a denuncia");
 			socket.broadcast.emit('denuncia comisaria', data);
 		});
 		socket.on('message admin', function _new_message(data) {  //Escucha algún mensaje nuevo que venga del admin

@@ -8,20 +8,27 @@ const cors = require('cors');
 const autoIncrement = require('mongoose-auto-increment');
 const https = require('https');
 const dbURI = 'mongodb://localhost/comisaria';
-const Denuncia = require('./models/denuncia');
 const Usuario = require('./models/usuario');
-const Message = require('./models/message');
 
+const Vehicle = require('./models/vehicle');
+const Theft = require('./models/theft');
+const Alert = require('./models/general');
+
+const Message = require('./models/message');
 const fs = require('fs');
 const options = {
 	key: fs.readFileSync('key.pem'),
 	cert: fs.readFileSync('cert.pem')
 };
 
-const httpsServer = https.createServer(options, server);
+/*const httpsServer = https.createServer(options, server);
 
 const _server = httpsServer.listen(443, function () {
 	console.log("Listen on port 443");
+});*/
+
+const _server = server.listen(8080, function () {
+	console.log("Listen on port 8080");
 });
 
 const session = require('express-session');
@@ -62,6 +69,53 @@ api.get('/user/:id', function getUser(req, res) {
 	});
 });
 
+api.get('/alerts', function alerts(req, res) {
+	var vehicles = Vehicle.find({state: 0}).exec();
+	//var thefts = Theft.find({state: 0}).exec();
+	var data = {};
+	vehicles
+	.then(function (vehicles_thefts) {
+		data.vehicles = vehicles_thefts; 
+		return Theft.find({state: 0}).exec();
+	})
+	.then(function (thefts) {
+		data.thefts = thefts;
+		return Alert.find({state: 0}).exec();
+	})
+	.then(function (alerts) {
+		data.alerts = alerts;
+		res.json({
+			data: data
+		});
+	})
+	.catch(function (error) {
+		res.json(error);
+	});
+});
+
+/*Usuario.findOne({name: 'jairo'}, function (error, data) {var promise = Usuario.findOneAndUpdate({_id: data._id}, {$set: { currentLocation: {latitude: 14.548252, longitude: -91.663329}}}).exec(); promise .then(function (response) {console.log(response); }) .catch(function (error) {console.log(error);});});*/
+
+api.put('/user/:id/location/:location', function putLocation(req, res){
+	var location = JSON.parse(req.params.location);
+	var id = req.params.id;
+	var promise = Usuario.findOneAndUpdate({_id: id}, {$set: {currentLocation: {latitude: location.latitude, longitude: location.longitude}}}).exec();
+	promise
+	.then(function (response) {
+		res.json({success: true})
+	})
+	.catch(function (error) {
+		res.json({error: error})
+	});
+});
+
+api.get('/policemen', function policemen(req, res) { //traer policías
+	Usuario.find({role: 'agent'}).exec(function (error, data) {	
+		res.json({
+			agents: data
+		});
+	});
+});
+
 api.post('/user', function postUser(req, res) {
 	var user = new Usuario({
 		role: "agent",
@@ -80,32 +134,66 @@ api.post('/user', function postUser(req, res) {
 	});
 });
 
-api.post('/complaint', function _complaint(req, res) {
-	var denuncia = new Denuncia(req.body);
-	denuncia
+api.post('/vehicle_theft', function _complaint(req, res) {
+	var vehicle = new Vehicle(req.body);
+	vehicle
 	.save()
-	.then(function (denuncia) {
+	.then(function (theft_vehicle) {
 		res.json({
 			success: true,
-			denuncia: denuncia
+			message: "Robo de vehículo reportado exitosamente",
+			theft: theft_vehicle,
+			type: 'theft_vehicle'
 		});
 	})
 	.catch(function (error) {
 		res.json({
 			success: false,
 			error: error
-		})
+		});
+	});
+	/*var denuncia = new Denuncia(req.body); denuncia .save() .then(function (denuncia) {res.json({success: true, denuncia: denuncia }); }) .catch(function (error) {res.json({success: false, error: error})});*/
+});
+
+api.post('/theft', function _theft(req, res) {
+	var theft = new Theft(req.body);
+	theft
+	.save()
+	.then(function _then(_theft) {
+		res.json({
+			success: true,
+			message: "Robo reportado exitosamente",
+			theft: _theft,
+			type: 'theft'
+		});
+	})
+	.catch(function _catch(error) {
+		res.json({
+			success: false,
+			theft: [],
+			error: error
+		});
 	});
 });
 
-api.get('/complaint', function _complaint(req, res) {
-	Denuncia.find().exec(function (error, data) {
-		if(error) {
-			res.json({error: error});
-		}
+api.post('/alert', function _alert(req, res) {
+	var _alert = new Alert(req.body);
+	_alert
+	.save()
+	.then(function fn(alert_general) {
 		res.json({
-			denuncias: data
-		})
+			success: true,
+			message: "Alerta reportada exitosamente",
+			theft: alert_general,
+			type: 'alert'
+		});
+	})
+	.catch(function fnError(error) {
+		res.json({
+			success: false,
+			theft: [],
+			error: error
+		});
 	});
 });
 
@@ -114,12 +202,10 @@ api.get('/logout', function logout(req, res) {
 	res.clearCookie('role');
 	res.clearCookie('user');
 	res.send("Ok");
-	//res.redirect('/login');
 });
 
 api.get('/authenticate/:user', function authenticate(req, res) {
 	var params = JSON.parse(req.params.user);
-
 	Usuario.findOne({name: params.user, password: params.password}, function (error, data) {
 		if(error) {
 			res.json({
@@ -127,9 +213,9 @@ api.get('/authenticate/:user', function authenticate(req, res) {
 			});
 		}
 		else {
-			res.cookie('id', data._id);
-			res.cookie('role', data.role);
-			res.cookie('user', data.name);
+			res.cookie('id', data._id, {expires: new Date(Date.now() + 900000000) });
+			res.cookie('role', data.role, {expires: new Date(Date.now() + 900000000) });
+			res.cookie('user', data.name, { expires: new Date(Date.now() + 900000000)});
 			res.json({
 				success: true,
 				user: data
@@ -139,10 +225,26 @@ api.get('/authenticate/:user', function authenticate(req, res) {
 });
 
 server.get('/admin/crimes', auth.authNoSession, function crimes(req, res) {
-	Denuncia.find({}, function (error, data) {
+	var vehicles = Vehicle.find({state: 0}).exec();
+	//var thefts = Theft.find({state: 0}).exec();
+	var data = {};
+	vehicles
+	.then(function (vehicles_thefts) {
+		data.vehicles = vehicles_thefts; 
+		return Theft.find({state: 0}).exec();
+	})
+	.then(function (thefts) {
+		data.thefts = thefts;
+		return Alert.find({state: 0}).exec();
+	})
+	.then(function (alerts) {
+		data.alerts = alerts;
 		res.render('admin', {
 			denuncias: data
 		});
+	})
+	.catch(function (error) {
+		res.json(error);
 	});
 });
 
@@ -168,7 +270,11 @@ server.get('/admin/agents', auth.authNoSession, function agents(req, res) {
 });
 
 server.get('/user/chat', auth.authNoSession, function chat(req, res) {
-		res.render('chat');
+	res.render('chat');
+});
+
+server.get('/user/chat/private', auth.authNoSession, function chatPrivate(req, res) {
+	res.render('chat_user_private');
 });
 
 server.get('/admin/chat', auth.authNoSession, function chatAdmin(req, res) {
@@ -180,14 +286,34 @@ server.get('/admin/chat', auth.authNoSession, function chatAdmin(req, res) {
 });
 
 server.get('/user', auth.authNoSession, function user(req, res){
-	res.render('index');
+	var id = req.cookies.id;
+	Usuario.findOne({_id: id}).select('name lastname').exec(function (error, data) {
+		Vehicle.find({user: data._id}).sort('-date').exec(function (error, thefts) {
+			res.render('index', {
+				name: data.name,
+				lastname: data.lastname,
+				thefts: thefts
+			});
+		});
+	});
 });
 
 server.get('/login', auth.authUser, function login(req, res) {
 	res.render('login');
 });
 
-server.get('/user/notifier', auth.authNoSession, function notifier(req, res) {
-	res.render('notifier', {});
+server.get('/user/theft_vehicle', auth.authNoSession, function vehicle(req, res) {
+	res.render('vehicle');
 });
+
+server.get('/user/theft', auth.authNoSession, function theft(req, res) {
+	res.render('theft');
+});
+
+server.get('/user/alert', function _alert(req, res) {
+	res.render('alert');
+});
+/*server.get('/user/notifier', auth.authNoSession, function notifier(req, res) {
+	res.render('notifier', {});
+});*/
 server.use('/api', api);

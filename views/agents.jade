@@ -9,24 +9,27 @@ html
 		include includes/sidenav.jade
 		main(style="padding-left: 250px;")
 			include includes/header.jade
-			div.fixed-action-btn(style="top: 65px; right: 24px;")
-				a.btn-floating.btn-large.red(style="font-size: 2em;")#btn_add_police +
-			div.container(style="margin-top: 2em;")
+			div.fixed-action-btn(style="top: 55px; right: 24px;")
+				a.btn.red(style="font-size: 1em;padding: 0 0.8em;")#btn_add_police AGREGAR AGENTE
+			div(style="margin-top: 2em;")
 				div.row
-					h4.no-margin Listado de Policías
-					ul.collection#list-agents
-						each agent in agents
-							li.collection-item.avatar
-								img(src="/images/alfonso.png").circle
-								h4.no-margin.title.bold= agent.name
-								p Policía
-								p= "Ingreso: " + agent.entry
-
+					div.col.s4
+						h5.no-margin(style="font-size: 1em; font-weight: bold;") Listado de Policías
+						ul.collection#list-agents(style="height: 500px;overflow-y: scroll;")
+							each agent in agents
+								li.collection-item.avatar(style="cursor: pointer;", data-id= String(agent._id)).item-agent
+									img(src="/images/alfonso.png").circle
+									h4.no-margin.title.bold= agent.name
+									p Policía
+									p= "Ingreso: " + agent.entry
+					div.col.s8
+						h5.no-margin(style="font-size: 1em; font-weight: bold;") Ubicación de agentes
+						div#map.map_agents
 		script(src='/bower_components/jquery/dist/jquery.js')
 		script(src='/bower_components/materialize/dist/js/materialize.js')
-		//- script(src="//maps.google.com/maps/api/js?sensor=true&key=AIzaSyCHwwNb-e6Sk8CbsUG2t6OsOsPHOtXPoUc")
+		script(src="//maps.google.com/maps/api/js?sensor=true&key=AIzaSyCHwwNb-e6Sk8CbsUG2t6OsOsPHOtXPoUc")
 		script(src='/bower_components/socket.io-client/socket.io.js')
-		//- script(src='/js/gmaps.js')
+		script(src='/js/gmaps.js')
 		script(src='/bower_components/jquery.serializeJSON/jquery.serializejson.js')
 		script(src='/js/admin.js')
 		script(src='/js/globals.js')

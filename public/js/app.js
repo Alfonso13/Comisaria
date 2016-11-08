@@ -36,30 +36,28 @@ $(document).ready(function _load() {
 			var $message = '<div class="row destination"><div class="col s11 m8 offset-m2 l6 offset-l3"><div style="box-shadow: none;margin: 0;padding: 0;" class="card-panel white"> <div class="row valign-wrapper"><div class="col s3"><img src="/images/alfonso.png" alt="" class="circle responsive-img"></div><div style="padding: 0.5em; border-radius: 8px;" class="col s10 blue white-text"> <h5 style="font-weight: 600;" class="no-margin">' + data.username + '</h5><span>' + data.message + '</span></div></div></div></div></div>';
 			$("#container-chat").append($message);
 		}
-		else {
+		else if(data.id == getId()) { //Es privado
 			var $message = '<div class="row destination"><div class="col s11 m8 offset-m2 l6 offset-l3"><div style="box-shadow: none;margin: 0;padding: 0;" class="card-panel white"> <div class="row valign-wrapper"><div class="col s3"><img src="/images/alfonso.png" alt="" class="circle responsive-img"></div><div style="padding: 0.5em; border-radius: 8px;" class="col s10 blue white-text"> <h5 style="font-weight: 600;" class="no-margin">' + data.username + ' (privado)</h5><span>' + data.message + '</span></div></div></div></div></div>';
 			$("#container-chat").append($message);
 		}
-		/*else if(data.id == getId()) { //Es privado
-			var $message = '<div class="row destination"><div class="col s11 m8 offset-m2 l6 offset-l3"><div style="box-shadow: none;margin: 0;padding: 0;" class="card-panel white"> <div class="row valign-wrapper"><div class="col s3"><img src="/images/alfonso.png" alt="" class="circle responsive-img"></div><div style="padding: 0.5em; border-radius: 8px;" class="col s10 blue white-text"> <h5 style="font-weight: 600;" class="no-margin">' + data.username + ' (privado)</h5><span>' + data.message + '</span></div></div></div></div></div>';
-			$("#container-chat").append($message);
-		}*/
 	});
 
-	if($("#map").length > 0) {
+	/*if($("#map").length > 0) {
 		var map = new GMaps({
 			div: '#map',
 			lat: 14.537558,
 	  		lng: -91.677297,
 	  		zoom: 13
 		});
-	}
+	}*/
 
 	const events = {
 		locate: function _locate(event) {
 			var $element = $(event.target);
 			var successLocation = function successLocation(position) {
-				map.addMarker({
+				$("#latitud").text(position.coords.latitude);
+				$("#longitud").text(position.coords.longitude);
+				/*map.addMarker({
 					lat: position.coords.latitude,
 					lng: position.coords.longitude,
 					draggable: true,
@@ -77,8 +75,7 @@ $(document).ready(function _load() {
 						
 					$("#longitud").text(position.coords.longitude);
 					$("#longitude-input").val(position.coords.longitude);
-				});
-
+				});*/
 			};
 			var errorLocation = function errorLocation(error) {
 				console.log(error);
@@ -86,29 +83,90 @@ $(document).ready(function _load() {
 			navigator.geolocation.getCurrentPosition(successLocation, errorLocation, {enableHighAccuracy: true});
 		},
 		save: function save() {
-			var serialize = $("#form-denuncia").serializeJSON();
+			var $form = $("#form");
+			var serialize = $form.serializeJSON();
+			var route = $form.attr('data-route');
+			console.log(route);
 			serialize.location = {
-				lat: $("#latitude-input").val(),
-				lng: $("#longitude-input").val()
+				latitude: $("#latitud").text(),
+				longitude: $("#longitud").text()
 			};
+			serialize.user = JSON.parse(localStorage.user)._id;
+			serialize.state = 0;
 			var xhr = $.post(api + '/api/complaint', serialize);
-			//var xhr = $.post('/api/complaint', serialize);
+			//var xhr = $.post(route, serialize);
 			xhr
 			.done(function done(response) {
 				document.form_denuncia.reset();
 				$("#latitud").text("");
 				$("#longitud").text("");
-				socket.emit('denuncia', response.denuncia);
-				Materialize.toast("Denuncia envíada correctamente", 500);
-				//window.location.href = "/user";
+				socket.emit('denuncia', {theft: response.theft, type: response.type});
+				Materialize.toast(response.message, 1200, null, function () {
+					window.location.href = "/user";
+				});
 			})
 			.fail(function fail() {
 				console.log(arguments);
 			});
+		},
+		support52: function support52() {
+			var geolocation = {
+				success: function success(position) {
+					socket.emit('support52', {
+						location: {
+							latitude: position.coords.latitude,
+							longitude: position.coords.longitude
+						},
+						message: "¡NECESITAMOS APOYO!"
+					})
+				},
+				error: function error(error) {
+					Materialize.toast("Ocurrió un error", 1000);
+				},
+				options: {
+					enableHighAccuracy: true
+				}
+			};
+			navigator.geolocation.getCurrentPosition(geolocation.success, geolocation.error, geolocation.options);
+		},
+		notifier: function notifier() {
+			$("#alert").openModal();
+		},
+		chat: function chat() {
+			$("#alert_chat").openModal();
+		},
+		updateLocation: function updateLocation() {
+			var geolocation = {
+				success: function success(position) {
+					var location = JSON.stringify({latitude: position.coords.latitude, longitude: position.coords.longitude});
+					var id = JSON.parse(localStorage.user)._id;
+					//var xhr = $.ajax({url: '/api/user/' + id + '/location/' + location, type: 'PUT'});
+					
+					var xhr = $.ajax({url: api + '/api/user/' + id + '/location/' + location, type: 'PUT'});
+					xhr
+					.done(function (response) {
+						Materialize.toast('Ubicación actualizada exitosamente', 1200);
+					})
+					.fail(function () {
+						Materialize.toast('Ocurrió un error al actualizar la ubicación', 1200);
+					});
+				},
+				error: function error(error) {
+					console.log(error);
+				},
+				options: {
+					enableHighAccuracy: true
+				}
+			};
+			navigator.geolocation.getCurrentPosition(geolocation.success, geolocation.error, geolocation.options);
 		}
 	};
-	/*$("#form-denuncia").validate({rules: {direction: {required: true }, description: {required: true } }, messages: {direction: "Ingresa una dirección", description: "Ingresa una descripción"}, errorElement: "div", errorPlacement: function (error, element) {var placement = $(element).data('error'); if(placement) {$(placement).append(error); } else {error.insertAfter(element); } } });*/
-	
+
 	$("#locate").on('click', events.locate);
 	$("#save").on('click', events.save);
+	$("#notifier").on('click', events.notifier);
+	$("#chat").on('click', events.chat);
+	$('select').material_select();
+	$('#apoyo52').on('click', events.support52);
+	$("#update_location").on('click', events.updateLocation);
 });

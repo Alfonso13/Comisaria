@@ -5,3 +5,6 @@
 .no-margin {
 	margin: 0 !important;
 }
+
+.item-agent {transition: all 0.2s ease;}
+.item-agent:hover {background: #efefef;}
