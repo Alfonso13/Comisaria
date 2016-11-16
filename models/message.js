@@ -1,5 +1,4 @@
 const utils = require('./utils');
-
 const schemaMessage = utils.Schema({
 	created: Date,
 	content: String,
@@ -7,7 +6,5 @@ const schemaMessage = utils.Schema({
 	userId: String,
 	destination: utils.Schema.Types.ObjectId
 });
-
 const Message = utils.mongoose.model('Chat', schemaMessage);
-
 module.exports = Message;

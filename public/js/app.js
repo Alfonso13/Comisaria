@@ -1,9 +1,17 @@
 $(document).ready(function _load() {
 	const api = "https://67.205.154.65:443";
-	const socket = io.connect(api, {
+	/*const socket = io.connect(api, {
 		secure: true
-	});
-	//const socket = io.connect();
+	});*/
+
+
+	if($("#list-denuncias").length > 0) {
+		var windowHeight = $(window).height();
+		var position = $("#list-denuncias").position().top;
+		$("#list-denuncias").height(windowHeight - position - 50);
+	}
+
+	const socket = io.connect();
 	var $inputMessage = $("#message");
 	$(".datepicker").pickadate();
 
@@ -31,8 +39,28 @@ $(document).ready(function _load() {
 		return id;
 	};
 
+	var parseDate = function parseDate(_date) {
+		var date = new Date(_date);
+		return date.getDate() + "/" + date.getMonth() + "/" + date.getFullYear();
+	};
+
+	socket.on('denuncia', function complaint(data) {
+		var date = parseDate(data.theft.date);
+		var $html;
+		if(data.type == 'theft_vehicle') {
+			$html = "<li class='collection-item' data-id='"+ data.theft._id +"'> <p><strong>H/R Vehículo</strong></p> <p class='no-margin'><strong>Fecha: </strong> "+ date +"</p> <p class='no-margin'><strong>Modalidad:</strong>"+ data.theft.type +"</p> <p class='no-margin'><strong>Tipo vehículo:</strong>" + data.theft.type_vehicle + " </p> <p class='no-margin'><strong>Marca: </strong>" + data.theft.brand + " </p><p class='no-margin'><strong>Color: </strong>" + data.theft.color + " </p><p class='no-margin'><strong>Placa: </strong>" + data.theft.plate + " </p><p class='no-margin'><strong>Dirección: </strong>" + data.theft.reference + "</p> <p class='no-margin'><strong>Modo: </strong> " + data.theft.mode +  " </p> <p class='no-margin'><strong>Denunciante: </strong> " + data.theft.whistleblower + " </p> <a class='waves-effect btn'>CONFIRMAR</a> </li>";
+		}
+		if(data.type == 'theft') {
+			$html = "<li class='collection-item' data-id='"+ data.theft._id +"'> <p><strong>Robo</strong></p> <p class='no-margin'><strong>Fecha: </strong> "+ date +"</p> <p class='no-margin'><strong>Robo a:</strong>"+ data.theft.theft_to +"</p> <p class='no-margin'><strong>Dirección robo:</strong>" + data.theft.theft_reference + " </p> <p class='no-margin'><strong>Vestimenta victimario: </strong>" + data.theft.victimizer_clothing + " </p><p class='no-margin'><strong>Objeto robado: </strong>" + data.theft.stolen_object + "</p><p class='no-margin'><strong>Denunciante: </strong>" + data.theft.whistleblower + " </p><a class='waves-effect btn'>CONFIRMAR</a> </li>";
+		}
+		if(data.type == 'alert') {
+			$html = "<li class='collection-item' data-id='"+ data.theft._id +"'> <p><strong>Robo</strong></p> <p class='no-margin'><strong>Fecha: </strong> "+ date +"</p> <p class='no-margin'><strong>Robo a:</strong>"+ data.theft.theft_to +"</p> <p class='no-margin'><strong>Dirección robo:</strong>" + data.theft.theft_reference + " </p> <p class='no-margin'><strong>Vestimenta victimario: </strong>" + data.theft.victimizer_clothing + " </p><p class='no-margin'><strong>Objeto robado: </strong>" + data.theft.stolen_object + "</p><p class='no-margin'><strong>Denunciante: </strong>" + data.theft.whistleblower + " </p><a class='waves-effect btn'>CONFIRMAR</a> </li>";
+		}
+		$("#list-denuncias").prepend($html);
+	});
+
 	socket.on('message agent', function newMessage(data) { //Escucha algún nuevo mensaje que venga del admin
-		if(!data.id) { //es un mensaje para todos
+		if(!data.id) { //es un mensaje para todos 
 			var $message = '<div class="row destination"><div class="col s11 m8 offset-m2 l6 offset-l3"><div style="box-shadow: none;margin: 0;padding: 0;" class="card-panel white"> <div class="row valign-wrapper"><div class="col s3"><img src="/images/alfonso.png" alt="" class="circle responsive-img"></div><div style="padding: 0.5em; border-radius: 8px;" class="col s10 blue white-text"> <h5 style="font-weight: 600;" class="no-margin">' + data.username + '</h5><span>' + data.message + '</span></div></div></div></div></div>';
 			$("#container-chat").append($message);
 		}
@@ -86,15 +114,18 @@ $(document).ready(function _load() {
 			var $form = $("#form");
 			var serialize = $form.serializeJSON();
 			var route = $form.attr('data-route');
-			console.log(route);
+			var is = $("#is").val();
+
 			serialize.location = {
 				latitude: $("#latitud").text(),
 				longitude: $("#longitud").text()
 			};
 			serialize.user = JSON.parse(localStorage.user)._id;
 			serialize.state = 0;
-			var xhr = $.post(api + '/api/complaint', serialize);
-			//var xhr = $.post(route, serialize);
+			serialize.is = is;
+
+			//var xhr = $.post(api + '/api/complaint', serialize);
+			var xhr = $.post(route, serialize);
 			xhr
 			.done(function done(response) {
 				document.form_denuncia.reset();
@@ -140,9 +171,8 @@ $(document).ready(function _load() {
 				success: function success(position) {
 					var location = JSON.stringify({latitude: position.coords.latitude, longitude: position.coords.longitude});
 					var id = JSON.parse(localStorage.user)._id;
-					//var xhr = $.ajax({url: '/api/user/' + id + '/location/' + location, type: 'PUT'});
-					
-					var xhr = $.ajax({url: api + '/api/user/' + id + '/location/' + location, type: 'PUT'});
+					var xhr = $.ajax({url: '/api/user/' + id + '/location/' + location, type: 'PUT'});
+					//var xhr = $.ajax({url: api + '/api/user/' + id + '/location/' + location, type: 'PUT'});
 					xhr
 					.done(function (response) {
 						Materialize.toast('Ubicación actualizada exitosamente', 1200);
@@ -159,6 +189,25 @@ $(document).ready(function _load() {
 				}
 			};
 			navigator.geolocation.getCurrentPosition(geolocation.success, geolocation.error, geolocation.options);
+		},
+		confirmar: function (event) {
+			var $button = $(event.currentTarget);
+			var $parent = $button.parent();
+			var id = $parent.attr('data-id');
+			var type = $parent.attr('data-type');
+			var xhr = $.ajax({url: '/api/user/' + type + '/' + id + '/state/1', type: 'PUT'});
+			
+			xhr
+			.done(function done(response) {
+				console.log(response);
+				if(response.success) {
+					$parent.addClass('teal lighten-5');
+					$button.hide();
+				}
+			})
+			.fail(function fail(error) {
+				console.log(error);
+			});
 		}
 	};
 
@@ -169,4 +218,5 @@ $(document).ready(function _load() {
 	$('select').material_select();
 	$('#apoyo52').on('click', events.support52);
 	$("#update_location").on('click', events.updateLocation);
+	$(document).on('click', '.confirm', events.confirmar);
 });

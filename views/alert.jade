@@ -11,6 +11,7 @@ html
 			div.container
 				h5.center-align ALERTA GENERAL
 				form(name="form_denuncia", data-route='/api/alert')#form
+					input(type="hidden" id="is" value="general")
 					div.row
 						div.input-field
 							label Referencia:
@@ -40,3 +41,4 @@ html
 		script(src='/bower_components/jquery.serializeJSON/jquery.serializejson.js')
 		script(src='/bower_components/socket.io-client/socket.io.js')
 		script(src='/js/app.js')
+		script(src='/js/globals.js')

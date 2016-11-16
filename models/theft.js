@@ -12,7 +12,8 @@ const schemaTheft = new utils.Schema({
 	},
 	user: utils.Schema.ObjectId,
 	date: {type: Date, default: Date.now},
-	state: {type: Number, default: 0}
+	state: {type: Number, default: 0},
+	is: {type: String, default: 'theft'}
 });
 const Theft = utils.mongoose.model('Theft', schemaTheft);
 module.exports = Theft;

@@ -14,7 +14,8 @@ const schemaVehicle = new utils.Schema({
 		longitude: Number
 	},
 	user: utils.Schema.ObjectId,
-	date: {type: Date, default: Date.now}
+	date: {type: Date, default: Date.now},
+	is: {type: String, default: 'stole_theft'}
 });
 const Vehicle = utils.mongoose.model('VehicleComplaint', schemaVehicle);
 module.exports = Vehicle;

@@ -5,7 +5,7 @@ html
 		link(rel='stylesheet', href='/bower_components/materialize/dist/css/materialize.css')
 		link(rel='stylesheet', href='/css/app.css')
 	body
-		include includes/header.jade
+		include includes/header_user.jade
 		section.container
 			h5.no-margin(style="font-weight: bold;margin-top: 5px !important;") Chat privado
 			small Chat directo con Comisaria
@@ -26,7 +26,6 @@ html
 			//- 				div(class="col s12") 
 			//- 					h5(style="font-weight: 600;").no-margin Alfonso
 			//- 					span This is a square image. Add the "circle" class to it to make it appear circular.  
-
 			div.row
 				textarea(class="materialize-textarea no-margin" name="message")#message
 				a(href="#").waves-effect.waves-light.btn.red.send-message ENVIAR

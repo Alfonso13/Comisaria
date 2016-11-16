@@ -10,4 +10,9 @@ $(document).ready(function _ready() {
 			console.log(arguments);
 		});
 	});
+
+	/*$(".back").on('click', function back() {
+		//window.history.back();
+	});*/
+
 });

@@ -8,7 +8,8 @@ const schemaAlert = new utils.Schema({
 	},
 	user: utils.Schema.ObjectId,
 	date: {type: Date, default: Date.now},
-	state: {type: Number, default: 0}
+	state: {type: Number, default: 0},
+	is: {type: String, default: 'general'}
 });
 const Alert = utils.mongoose.model('Alert', schemaAlert);
 module.exports = Alert;

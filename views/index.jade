@@ -8,38 +8,106 @@ html
 		include includes/header.jade
 		include includes/alert.jade
 		include includes/alert_chat.jade
-		div.row(style="margin-top: 1em;")
-			section.container
-				h4.no-margin(style="font-weight: 600;font-size: 1.8em;") Agente Policial
-				p.no-margin(style="font-weight: 300; color: #AAA;font-size: 1.8em;")= (name + " " + lastname)
-				br
+		section.container
+			div.row(style="margin: 1em 0 1em 0;")
+				h4.no-margin(style="font-weight: 600;font-size: 1.4em;") Agente Policial
+				p.no-margin(style="font-weight: 300; color: #AAA;font-size: 1.4em;")= (name + " " + lastname)
 				div.divider
-				br
-				a(class="waves-effect waves-light btn red")#update_location Actualizar Ubicación
-				br
-				p.no-margin(style="color: #AAA;") Es recomendable que actualices tu ubicación cada 10 minutos
-				br
-				br
-				a(class="waves-effect waves-light btn red")#apoyo52 APOYO 5-2
-		//- div.row
-		//- 	ul(style="overflow-y: scroll;height: 200px;").collection#list-denuncias
-		//- 		each theft in thefts
-		//- 			li.collection-item
-		//- 				span.title Alfonso
-						//- span.title.no-margin
-						//- 	strong Descripción: 
-						//- 	= theft.description
-						//- p.no-margin
-						//- 	strong Dirección: 
-						//- 	= theft.address
-						//- p.no-margin
-						//- 	strong Fecha: 
-						//- 	= theft.date
-						//- p.no-margin
-						//- 	strong Observación: 
-						//- 	= theft.observation
-						//- a(class="waves-effect btn attend") ATENDER
-
+			div.row(style="margin: 0;")
+				div.col.s6(style="padding: 0;")
+					a(class="waves-effect waves-light btn red" style="font-size: 0.9em; padding: 0 0.5em;")#update_location Actualizar Ubicación
+				div.col.s6(style="padding: 0;")
+					a(class="waves-effect waves-light btn red")#apoyo52 APOYO 5-2
+		div.row
+			section.container
+				h5.no-margin(style="font-size: 1.2em; font-weight: bold; margin-top: 6px !important;") Listado de alertas
+				ul(style="overflow-y: scroll;").collection#list-denuncias
+					each denuncia in denuncias
+						if denuncia.is == 'theft'
+							if denuncia.state == 1
+								li.collection-item.teal.lighten-4(data-id= String(denuncia._id) data-type='theft')
+									p.no-margin
+										strong(style="font-size: 1.4em; font-weight: bold;") ALERTA CONFIRMADA
+									p
+										strong Robo
+									p.no-margin
+										strong Fecha: 
+										= denuncia.date
+									p.no-margin
+										strong Robo a: 
+										= denuncia.theft_to
+									p.no-margin
+										strong Dirección robo:
+										= denuncia.theft_reference
+									p.no-margin
+										strong Vestimenta victimario:
+										= denuncia.victimizer_clothing
+									p.no-margin
+										strong Objeto robado:
+										= denuncia.stolen_object
+									p.no-margin
+										strong Denunciante:
+										= denuncia.whistleblower
+							if denuncia.state == 0
+								li.collection-item(data-id= String(denuncia._id) data-type='theft')
+									p
+										strong Robo
+									p.no-margin
+										strong Fecha: 
+										= denuncia.date
+									p.no-margin
+										strong Robo a: 
+										= denuncia.theft_to
+									p.no-margin
+										strong Dirección robo:
+										= denuncia.theft_reference
+									p.no-margin
+										strong Vestimenta victimario:
+										= denuncia.victimizer_clothing
+									p.no-margin
+										strong Objeto robado:
+										= denuncia.stolen_object
+									p.no-margin
+										strong Denunciante:
+										= denuncia.whistleblower
+									a(class="waves-effect btn").confirm CONFIRMAR
+							//- if denuncia.state == 0
+							//- 	li.collection-item(data-id= String(denuncia._id) data-type='theft')	
+						if denuncia.is == 'theft_vehicle'
+							li.collection-item(data-id= String(denuncia._id) data-type='theft_vehicle')
+								p
+									strong H/R Vehículo
+								p.no-margin
+									strong Fecha:
+									= denuncia.date
+								p.no-margin
+									strong Modalidad:
+									= denuncia.type
+								p.no-margin
+									strong Tipo vehículo:
+									= denuncia.type_vehicle
+								p.no-margin
+									strong Marca:
+									= denuncia.brand
+								p.no-margin
+									strong Color:
+									= denuncia.color
+								p.no-margin
+									strong Placa:
+									= denuncia.plate
+								p.no-margin
+									strong Dirección:
+									= denuncia.reference
+								p.no-margin
+									strong Modo:
+									= denuncia.mode
+								p.no-margin
+									strong Denunciante:
+									= denuncia.whistleblower
+								a(class="waves-effect btn").confirm CONFIRMAR
+						if denuncia.is == 'general'
+							//- li.collection-item
+							//- 	span.title adsfadsf
 		div(class="fixed-action-btn vertical click-to-toggle")
 			a(class="btn-floating btn-large red" style="font-size: 2em;") +
 			ul
@@ -47,8 +115,6 @@ html
 					a(class="btn-floating red" style="width: 45px; border-radius: 0;")#notifier Alerta
 				li
 					a(class="btn-floating red" style="width: 45px; border-radius: 0;")#chat Chat
-		
-
 		script(src='/bower_components/jquery/dist/jquery.js')
 		script(src='/bower_components/materialize/dist/js/materialize.js')
 		script(src='/bower_components/socket.io-client/socket.io.js')

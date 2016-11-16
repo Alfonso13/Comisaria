@@ -5,6 +5,7 @@ function Sockets(io) {
 		console.log("Alguien se ha conectado con Sockets");
 		socket.on('denuncia', function socket_denuncia(data) {
 			socket.broadcast.emit('denuncia comisaria', data);
+			socket.broadcast.emit('denuncia', data);
 		});
 		socket.on('message admin', function _new_message(data) {  //Escucha algún mensaje nuevo que venga del admin
 			socket.broadcast.emit('message agent', {  //Envía el mensaje a todos los agentes
@@ -15,13 +16,6 @@ function Sockets(io) {
 		});
 		socket.on('message private admin', function private(data) {
 			socket.broadcast.emit('message private admin', {message: data.message, username: data.username});
-		});
-
-		socket.on('typing', function typing() {
-			
-		});
-		socket.on('stop typing', function stopTyping() {
-			
 		});
 		socket.on('message', function _message(message) {
 			var chat_message = new Message({

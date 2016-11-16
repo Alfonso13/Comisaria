@@ -1,0 +1,13 @@
+header
+	ul#dropdown1.dropdown-content
+		li
+			a(href="#").logout Salir
+	nav.blue.lighten-1
+		div.nav-wrapper
+			a(class="waves-effect waves-light btn red left" style="margin-top: 0.5em; padding: 0 0.5em; font-size: 0.8em;" href="/user").back ATRÁS
+			ul#nav-mobile(class='right')
+				li
+					a(href='#' data-activates="dropdown1").blue.darken-1.dropdown-button#username
+					script.
+						var user = JSON.parse(localStorage["user"]).name;
+						document.getElementById('username').innerText = user;

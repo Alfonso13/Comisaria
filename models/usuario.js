@@ -3,6 +3,7 @@ const utils = require('./utils');
 const schemaUsuario = new utils.Schema({
 	role: String,
 	name: {type: String, required: true, unique: true},
+	hierarchy: String,
 	lastname: {type: String, required: true},
 	state: {type: Number, required: true},
 	currentLocation: {

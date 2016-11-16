@@ -1,3 +1,4 @@
+/*Requires*/
 const express = require('express');
 const bodyParser = require('body-parser');
 const server = express();
@@ -8,28 +9,29 @@ const cors = require('cors');
 const autoIncrement = require('mongoose-auto-increment');
 const https = require('https');
 const dbURI = 'mongodb://localhost/comisaria';
-const Usuario = require('./models/usuario');
+const async = require('async');
 
+/*Models*/
+const Usuario = require('./models/usuario');
 const Vehicle = require('./models/vehicle');
 const Theft = require('./models/theft');
 const Alert = require('./models/general');
-
 const Message = require('./models/message');
+
 const fs = require('fs');
 const options = {
 	key: fs.readFileSync('key.pem'),
 	cert: fs.readFileSync('cert.pem')
 };
 
-const httpsServer = https.createServer(options, server);
-
+/*const httpsServer = https.createServer(options, server);
 const _server = httpsServer.listen(443, function () {
 	console.log("Listen on port 443");
-});
-
-/*const _server = server.listen(8080, function () {
-	console.log("Listen on port 8080");
 });*/
+
+const _server = server.listen(3000, function () {
+	console.log("Listen on port 3000");
+});
 
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
@@ -108,8 +110,47 @@ api.put('/user/:id/location/:location', function putLocation(req, res){
 	});
 });
 
+api.put('/user/:type/:id/state/:state', function putState(req, res) {	
+	var id = req.params.id;
+	var type = req.params.type;
+	var state = req.params.state;
+	var promise;
+	if(type == 'theft') {
+		promise = Theft.findOneAndUpdate({_id: id}, {$set: {state: state}}).exec();
+		promise
+		.then(function then(_theft) {
+			res.json({success: true, theft: _theft});
+		})
+		.catch(function _catch(error) {
+			res.json({success: false,error: error,theft: {}});
+		});
+	}
+
+	if(type == 'theft_vehicle') {
+		promise = Vehicle.findOneAndUpdate({_id: id}, {$set: {state: state}}).exec();
+		promise
+		.then(function then(_theft_vehicle) {
+			res.json({
+				success: true,
+				theft: _theft_vehicle
+			});
+		})
+		.catch(function _catch(error) {
+			res.json({
+				success: true,
+				theft: {},
+				error: error
+			});
+		});
+	}
+
+	if(type == 'general') {
+		res.json({casual: "hola"})
+	}
+});
+
 api.get('/policemen', function policemen(req, res) { //traer policías
-	Usuario.find({role: 'agent'}).exec(function (error, data) {	
+	Usuario.find({role: 'agent'}).exec(function (error, data) {
 		res.json({
 			agents: data
 		});
@@ -224,10 +265,17 @@ api.get('/authenticate/:user', function authenticate(req, res) {
 	});
 });
 
+var $concat = function $concat(models) {
+	async.concat(models, function (model, callback){
+		var query = model.find({});
+	});
+};
+
+
+
 server.get('/admin/crimes', auth.authNoSession, function crimes(req, res) {
-	var vehicles = Vehicle.find({state: 0}).exec();
-	//var thefts = Theft.find({state: 0}).exec();
 	var data = {};
+	var vehicles = Vehicle.find({state: 0}).exec();
 	vehicles
 	.then(function (vehicles_thefts) {
 		data.vehicles = vehicles_thefts; 
@@ -239,12 +287,22 @@ server.get('/admin/crimes', auth.authNoSession, function crimes(req, res) {
 	})
 	.then(function (alerts) {
 		data.alerts = alerts;
-		res.render('admin', {
-			denuncias: data
+		async.concat([Vehicle, Theft, Alert], function (model, callback) {
+			var query = model.find({}).sort({date: -1});
+			query.exec(function (err, docs) {
+				if(err) throw err;
+				callback(err, docs)
+			});
+		}, function (error, result) {
+			if(error) throw error;
+			result = result.sort(function (a, b) {
+				return (a.date < b.date) ? 1 : (a.date > b.date) ? -1 : 0;
+			});
+			res.render('admin', {});
 		});
 	})
 	.catch(function (error) {
-		res.json(error);
+		console.log(error);
 	});
 });
 
@@ -287,12 +345,42 @@ server.get('/admin/chat', auth.authNoSession, function chatAdmin(req, res) {
 
 server.get('/user', auth.authNoSession, function user(req, res){
 	var id = req.cookies.id;
-	Usuario.findOne({_id: id}).select('name lastname').exec(function (error, data) {
-		Vehicle.find({user: data._id}).sort('-date').exec(function (error, thefts) {
-			res.render('index', {
-				name: data.name,
-				lastname: data.lastname,
-				thefts: thefts
+
+	Usuario.findOne({_id: id}).select('name lastname').exec(function (error, user) {
+		var data = {};
+		var vehicles = Vehicle.find({}).exec();
+		vehicles
+		.then(function (vehicles_thefts) {
+			data.vehicles = vehicles_thefts; 
+			return Theft.find({}).exec();
+		})
+		.then(function (thefts) {
+			data.thefts = thefts;
+			return Alert.find({}).exec();
+		})
+		.then(function (alerts) {
+			data.alerts = alerts;
+			async.concat([Vehicle, Theft, Alert], function (model, callback) {
+				var query = model.find({}).sort({date: -1});
+				query.exec(function (err, docs) {
+					if(err) throw err;
+					callback(err, docs)
+				});
+			}, function (error, result) {
+				if(error) throw error;
+				result = result.sort(function (a, b) {
+					return (a.date < b.date) ? 1 : (a.date > b.date) ? -1 : 0;
+				});
+				res.render('index', {
+					denuncias: result,
+					name: user.name,
+					lastname: user.lastname
+				});
+			});
+		})
+		.catch(function (error) {
+			res.json({
+				error: error
 			});
 		});
 	});
