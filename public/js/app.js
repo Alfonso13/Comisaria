@@ -1,8 +1,8 @@
 $(document).ready(function _load() {
 	const api = "https://67.205.154.65:443";
-	/*const socket = io.connect(api, {
+	const socket = io.connect(api, {
 		secure: true
-	});*/
+	});
 
 
 	if($("#list-denuncias").length > 0) {
@@ -11,7 +11,7 @@ $(document).ready(function _load() {
 		$("#list-denuncias").height(windowHeight - position - 50);
 	}
 
-	const socket = io.connect();
+	/*const socket = io.connect();*/
 	var $inputMessage = $("#message");
 	$(".datepicker").pickadate();
 
@@ -134,8 +134,8 @@ $(document).ready(function _load() {
 			serialize.state = 0;
 			serialize.is = is;
 
-			//var xhr = $.post(api + '/api/complaint', serialize);
-			var xhr = $.post(route, serialize);
+			var xhr = $.post(api + '/api/complaint', serialize);
+			//var xhr = $.post(route, serialize);
 			xhr
 			.done(function done(response) {
 				document.form_denuncia.reset();
@@ -181,8 +181,8 @@ $(document).ready(function _load() {
 				success: function success(position) {
 					var location = JSON.stringify({latitude: position.coords.latitude, longitude: position.coords.longitude});
 					var id = JSON.parse(localStorage.user)._id;
-					var xhr = $.ajax({url: '/api/user/' + id + '/location/' + location, type: 'PUT'});
-					//var xhr = $.ajax({url: api + '/api/user/' + id + '/location/' + location, type: 'PUT'});
+					//var xhr = $.ajax({url: '/api/user/' + id + '/location/' + location, type: 'PUT'});
+					var xhr = $.ajax({url: api + '/api/user/' + id + '/location/' + location, type: 'PUT'});
 					xhr
 					.done(function (response) {
 						Materialize.toast('Ubicación actualizada exitosamente', 1200);
@@ -205,7 +205,8 @@ $(document).ready(function _load() {
 			var $parent = $button.parent();
 			var id = $parent.attr('data-id');
 			var type = $parent.attr('data-type');
-			var xhr = $.ajax({url: '/api/user/' + type + '/' + id + '/state/1', type: 'PUT'});
+			//var xhr = $.ajax({url: '/api/user/' + type + '/' + id + '/state/1', type: 'PUT'});
+			var xhr = $.ajax({url: api + '/api/user/' + type + '/' + id + '/state/1', type: 'PUT'});
 			xhr
 			.done(function done(response) {
 				if(response.success) {
@@ -222,7 +223,8 @@ $(document).ready(function _load() {
 			var $id = $(event.currentTarget).parent().attr('data-id');
 			var userId = JSON.parse(localStorage["user"])._id;
 			var username = JSON.parse(localStorage.user).name + " " + JSON.parse(localStorage.user).lastname;
-			var xhr = $.get('/api/alert/vehicle/'+$id);
+			//var xhr = $.get('/api/alert/vehicle/'+$id);
+			var xhr = $.get(api + '/api/alert/vehicle/'+$id);
 			xhr
 			.done(function done($alert) {
 				var date = parseDate($alert.alert.date);

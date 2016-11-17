@@ -19,7 +19,8 @@ $(document).ready(function ready() {
 
 			$("#true_delete").on('click', function (event) {
 				var $id = $(event.currentTarget).parent().parent().attr('data-id');
-				var xhr = $.ajax({url: '/api/user/' + $id, type: 'DELETE'});
+				//var xhr = $.ajax({url: '/api/user/' + $id, type: 'DELETE'});
+				var xhr = $.ajax({url: api + '/api/user/' + $id, type: 'DELETE'});
 				xhr
 				.done(function (response) {
 					$("#list-agents li").each(function (index, $li) {
@@ -61,7 +62,8 @@ $(document).ready(function ready() {
 				}
 			});
 
-			var all = $.get('/api/policemen');
+			//var all = $.get('/api/policemen');
+			var all = $.get(api + '/api/policemen');
 			all
 			.done(function (response) {
 				if(response.agents.forEach) {
@@ -87,7 +89,8 @@ $(document).ready(function ready() {
 				var $parent = $button.parent();
 				var id = $parent.attr('data-id');
 				var type = $parent.attr('data-type');
-				var xhr = $.ajax({url: '/api/user/' + type + '/' + id + '/state/2', type: 'PUT'});
+				//var xhr = $.ajax({url: '/api/user/' + type + '/' + id + '/state/2', type: 'PUT'});
+				var xhr = $.ajax({url: api + '/api/user/' + type + '/' + id + '/state/2', type: 'PUT'});
 				xhr
 				.done(function done(response) {
 					if(response.success) {
@@ -117,7 +120,8 @@ $(document).ready(function ready() {
 					marker.setAnimation(google.maps.Animation.BOUNCE);
 				}
 			});
-			var xhr = $.get('/api/alerts');
+			//var xhr = $.get('/api/alerts');
+			var xhr = $.get(api + '/api/alerts');
 			xhr
 			.done(function done(response) {
 				var vehicles = response.data.vehicles;
@@ -160,10 +164,10 @@ $(document).ready(function ready() {
 	}
 
 
-	/*const socket = io.connect(api, {
+	const socket = io.connect(api, {
 		secure: true
-	});*/
-	const socket = io.connect();
+	});
+	/*const socket = io.connect();*/
 	var $inputMessage = $("#message");
 	var getId = function getId() {
 		var id = JSON.parse(localStorage["user"])._id;
@@ -250,8 +254,8 @@ $(document).ready(function ready() {
 		var id = $(me).parents("li.collection-item").attr('data-id');
 
 		
-		//var xhr = $.get(api + '/api/user/'+id);
-		var xhr = $.get('/api/user/'+id);
+		var xhr = $.get(api + '/api/user/'+id);
+		//var xhr = $.get('/api/user/'+id);
 		xhr
 		.done(function done(response) {
 			var user = response.user;
@@ -268,8 +272,8 @@ $(document).ready(function ready() {
 	});
 	$("#btn-save-police").on('click', function click() {
 		var serialize = $("#form-new-agent").serializeJSON();
-		//var xhr = $.post(api + '/api/user', serialize);
-		var xhr = $.post('/api/user', serialize);
+		var xhr = $.post(api + '/api/user', serialize);
+		//var xhr = $.post('/api/user', serialize);
 		xhr
 		.done(function done(response) {
 			if(response.success) {
@@ -343,7 +347,7 @@ $(document).ready(function ready() {
 		serialize.is = is;
 
 		//var xhr = $.post(api + '/api/complaint', serialize);
-		var xhr = $.post(route, serialize);
+		var xhr = $.post(api + route, serialize);
 		xhr
 		.done(function done(response) {
 			$("#latitud").text("");
