@@ -47,14 +47,15 @@ $(document).ready(function _load() {
 	socket.on('denuncia', function complaint(data) {
 		var date = parseDate(data.theft.date);
 		var $html;
+		console.log(data);
 		if(data.type == 'theft_vehicle') {
-			$html = "<li class='collection-item' data-id='"+ data.theft._id +"'> <p><strong>H/R Vehículo</strong></p> <p class='no-margin'><strong>Fecha: </strong> "+ date +"</p> <p class='no-margin'><strong>Modalidad:</strong>"+ data.theft.type +"</p> <p class='no-margin'><strong>Tipo vehículo:</strong>" + data.theft.type_vehicle + " </p> <p class='no-margin'><strong>Marca: </strong>" + data.theft.brand + " </p><p class='no-margin'><strong>Color: </strong>" + data.theft.color + " </p><p class='no-margin'><strong>Placa: </strong>" + data.theft.plate + " </p><p class='no-margin'><strong>Dirección: </strong>" + data.theft.reference + "</p> <p class='no-margin'><strong>Modo: </strong> " + data.theft.mode +  " </p> <p class='no-margin'><strong>Denunciante: </strong> " + data.theft.whistleblower + " </p> <a class='waves-effect btn'>CONFIRMAR</a> </li>";
+			$html = "<li class='collection-item' data-id='"+ data.theft._id +"'> <p><strong>H/R Vehículo</strong></p> <p class='no-margin'><strong>Fecha: </strong> "+ date +"</p> <p class='no-margin'><strong>Modalidad:</strong>"+ data.theft.type +"</p> <p class='no-margin'><strong>Tipo vehículo:</strong>" + data.theft.type_vehicle + " </p> <p class='no-margin'><strong>Marca: </strong>" + data.theft.brand + " </p><p class='no-margin'><strong>Color: </strong>" + data.theft.color + " </p><p class='no-margin'><strong>Placa: </strong>" + data.theft.plate + " </p><p class='no-margin'><strong>Dirección: </strong>" + data.theft.reference + "</p> <p class='no-margin'><strong>Modo: </strong> " + data.theft.mode +  " </p> <p class='no-margin'><strong>Denunciante: </strong> " + data.theft.whistleblower + " </p> <a class='waves-effect btn confirm'>CONFIRMAR</a> </li>";
 		}
 		if(data.type == 'theft') {
-			$html = "<li class='collection-item' data-id='"+ data.theft._id +"'> <p><strong>Robo</strong></p> <p class='no-margin'><strong>Fecha: </strong> "+ date +"</p> <p class='no-margin'><strong>Robo a:</strong>"+ data.theft.theft_to +"</p> <p class='no-margin'><strong>Dirección robo:</strong>" + data.theft.theft_reference + " </p> <p class='no-margin'><strong>Vestimenta victimario: </strong>" + data.theft.victimizer_clothing + " </p><p class='no-margin'><strong>Objeto robado: </strong>" + data.theft.stolen_object + "</p><p class='no-margin'><strong>Denunciante: </strong>" + data.theft.whistleblower + " </p><a class='waves-effect btn'>CONFIRMAR</a> </li>";
+			$html = "<li class='collection-item' data-id='"+ data.theft._id +"'> <p><strong>Robo</strong></p> <p class='no-margin'><strong>Fecha: </strong> "+ date +"</p> <p class='no-margin'><strong>Robo a:</strong>"+ data.theft.theft_to +"</p> <p class='no-margin'><strong>Dirección robo:</strong>" + data.theft.theft_reference + " </p> <p class='no-margin'><strong>Vestimenta victimario: </strong>" + data.theft.victimizer_clothing + " </p><p class='no-margin'><strong>Objeto robado: </strong>" + data.theft.stolen_object + "</p><p class='no-margin'><strong>Denunciante: </strong>" + data.theft.whistleblower + " </p><a class='waves-effect btn confirm'>CONFIRMAR</a> </li>";
 		}
 		if(data.type == 'alert') {
-			$html = "<li class='collection-item' data-id='"+ data.theft._id +"'> <p><strong>Robo</strong></p> <p class='no-margin'><strong>Fecha: </strong> "+ date +"</p> <p class='no-margin'><strong>Robo a:</strong>"+ data.theft.theft_to +"</p> <p class='no-margin'><strong>Dirección robo:</strong>" + data.theft.theft_reference + " </p> <p class='no-margin'><strong>Vestimenta victimario: </strong>" + data.theft.victimizer_clothing + " </p><p class='no-margin'><strong>Objeto robado: </strong>" + data.theft.stolen_object + "</p><p class='no-margin'><strong>Denunciante: </strong>" + data.theft.whistleblower + " </p><a class='waves-effect btn'>CONFIRMAR</a> </li>";
+			$html = "<li class='collection-item' data-id='"+ data.theft._id +"'> <p><strong>Robo</strong></p> <p class='no-margin'><strong>Fecha: </strong> "+ date +"</p> <p class='no-margin'><strong>Robo a:</strong>"+ data.theft.theft_to +"</p> <p class='no-margin'><strong>Dirección robo:</strong>" + data.theft.theft_reference + " </p> <p class='no-margin'><strong>Vestimenta victimario: </strong>" + data.theft.victimizer_clothing + " </p><p class='no-margin'><strong>Objeto robado: </strong>" + data.theft.stolen_object + "</p><p class='no-margin'><strong>Denunciante: </strong>" + data.theft.whistleblower + " </p><a class='waves-effect btn confirm'>CONFIRMAR</a> </li>";
 		}
 		$("#list-denuncias").prepend($html);
 	});
@@ -70,6 +71,16 @@ $(document).ready(function _load() {
 		}
 	});
 
+	socket.on('confirm', function confirmComplaint(data) {
+		var $denuncias = $("#list-denuncias li");
+		var id = data._id;
+		$denuncias.each(function (index, $li) {
+			if($($li).attr('data-id') == id) {
+				$($li).removeClass('teal lighten-4').addClass('red lighten-4');
+				$($li).children("a").hide();
+			}
+		});
+	});
 	/*if($("#map").length > 0) {
 		var map = new GMaps({
 			div: '#map',
@@ -81,7 +92,6 @@ $(document).ready(function _load() {
 
 	const events = {
 		locate: function _locate(event) {
-			var $element = $(event.target);
 			var successLocation = function successLocation(position) {
 				$("#latitud").text(position.coords.latitude);
 				$("#longitud").text(position.coords.longitude);
@@ -196,17 +206,37 @@ $(document).ready(function _load() {
 			var id = $parent.attr('data-id');
 			var type = $parent.attr('data-type');
 			var xhr = $.ajax({url: '/api/user/' + type + '/' + id + '/state/1', type: 'PUT'});
-			
 			xhr
 			.done(function done(response) {
-				console.log(response);
 				if(response.success) {
+					socket.emit('confirm', response.theft);
 					$parent.addClass('teal lighten-5');
 					$button.hide();
 				}
 			})
 			.fail(function fail(error) {
 				console.log(error);
+			});
+		},
+		finalize: function finalize(event) {
+			var $id = $(event.currentTarget).parent().attr('data-id');
+			var userId = JSON.parse(localStorage["user"])._id;
+			var username = JSON.parse(localStorage.user).name + " " + JSON.parse(localStorage.user).lastname;
+			var xhr = $.get('/api/alert/vehicle/'+$id);
+			xhr
+			.done(function done($alert) {
+				var date = parseDate($alert.alert.date);
+				var $content = "<h3 class='no-margin' style='font-size: 1.5em;'>Completada</h3><p class='no-margin'>H/R Vehículo</p><p class='no-margin'><strong></strong>Fecha: " + date + "</p><p class='no-margin'><strong>Modalidad:</strong>" + $alert.alert.type + "</p><p class='no-margin'><strong>Tipo vehículo: </strong> " + $alert.alert.type_vehicle + " </p><p class='no-margin'><strong>Marca:</strong>" + $alert.alert.brand + "</p><p class='no-margin'><strong>Color: </strong> " + $alert.alert.color + " </p><p class='no-margin'><strong>Placa: </strong> " + $alert.alert.plate + " </p><p class='no-margin'><strong>Dirección: </strong> " + $alert.alert.reference + " </p><p class='no-margin'><strong>Modo:</strong> " + $alert.alert.mode + " </p><p class='no-margin'><strong>Denunciante: </strong> " + $alert.alert.whistleblower + " </p><p><strong>Favor de marcarla como finalizada</strong></p>";
+				var $message = '<div class="destination"><div><div style="box-shadow: none;margin: 0;padding: 0;" class="card-panel blue white-text"> <div class="row valign-wrapper"><div><span>' + $content + '</span></div></div></div></div></div>';
+
+				socket.emit('message private admin', {
+					message: $message,
+					username: username,
+					userId: userId
+				});
+			})
+			.fail(function fail() {
+				console.log(arguments);
 			});
 		}
 	};
@@ -219,4 +249,5 @@ $(document).ready(function _load() {
 	$('#apoyo52').on('click', events.support52);
 	$("#update_location").on('click', events.updateLocation);
 	$(document).on('click', '.confirm', events.confirmar);
+	$(document).on('click', '.finalize', events.finalize);
 });

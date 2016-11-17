@@ -71,18 +71,25 @@ api.get('/user/:id', function getUser(req, res) {
 	});
 });
 
+api.delete('/user/:id', function deleteUser(req, res) {
+	var id = req.params.id;
+	Usuario.remove({_id: id}, function removeUser(error, data) {
+		res.json({removed: true});
+	});
+});
+
 api.get('/alerts', function alerts(req, res) {
-	var vehicles = Vehicle.find({state: 0}).exec();
+	var vehicles = Vehicle.find({}).exec();
 	//var thefts = Theft.find({state: 0}).exec();
 	var data = {};
 	vehicles
 	.then(function (vehicles_thefts) {
 		data.vehicles = vehicles_thefts; 
-		return Theft.find({state: 0}).exec();
+		return Theft.find({}).exec();
 	})
 	.then(function (thefts) {
 		data.thefts = thefts;
-		return Alert.find({state: 0}).exec();
+		return Alert.find({}).exec();
 	})
 	.then(function (alerts) {
 		data.alerts = alerts;
@@ -176,22 +183,50 @@ api.post('/user', function postUser(req, res) {
 });
 
 api.post('/vehicle_theft', function _complaint(req, res) {
-	var vehicle = new Vehicle(req.body);
-	vehicle
-	.save()
-	.then(function (theft_vehicle) {
-		res.json({
-			success: true,
-			message: "Robo de vehículo reportado exitosamente",
-			theft: theft_vehicle,
-			type: 'theft_vehicle'
-		});
-	})
-	.catch(function (error) {
-		res.json({
-			success: false,
-			error: error
-		});
+	var body = req.body;
+	Usuario.find({_id: req.body.user}, function(error, user) { //Se busca el usuario que emitió el alerta
+		var vehicle;
+		if(user.role == 'admin') { //Se comprueba si el que emitió el alerta es uno de los de monitoreo
+			//Si es emitida por monitoreo se guarda con state: 0 (no confirmada)
+			vehicle = new Vehicle(req.body);
+			vehicle
+			.save()
+			.then(function (theft_vehicle) {
+				res.json({
+					success: true,
+					message: "Robo de vehículo reportado exitosamente",
+					theft: theft_vehicle,
+					type: 'theft_vehicle'
+				});
+			})
+			.catch(function (error) {
+				res.json({
+					success: false,
+					error: error
+				});
+			});
+		}
+		else {
+			body.state = 1;
+			vehicle = new Vehicle(body);
+			vehicle
+			.save()
+			.then(function _then(theft_vehicle) {
+				res.json({
+					success: true,
+					message: "Robo de vehículo reportado exitosamente",
+					theft: theft_vehicle,
+					type: 'theft_vehicle'
+				});
+			})
+			.catch(function _catch(error) {
+				res.json({
+					success: false,
+					error: error,
+					theft: []
+				});
+			});
+		}
 	});
 	/*var denuncia = new Denuncia(req.body); denuncia .save() .then(function (denuncia) {res.json({success: true, denuncia: denuncia }); }) .catch(function (error) {res.json({success: false, error: error})});*/
 });
@@ -265,25 +300,30 @@ api.get('/authenticate/:user', function authenticate(req, res) {
 	});
 });
 
+api.get('/alert/vehicle/:id', function getVehicle(req, res) {
+	var id = req.params.id;
+	Vehicle.findOne({_id: id}, function callback(error, data) {
+		res.json({alert: data});
+	});
+});
+
 var $concat = function $concat(models) {
 	async.concat(models, function (model, callback){
 		var query = model.find({});
 	});
 };
 
-
-
 server.get('/admin/crimes', auth.authNoSession, function crimes(req, res) {
 	var data = {};
-	var vehicles = Vehicle.find({state: 0}).exec();
+	var vehicles = Vehicle.find({}).exec();
 	vehicles
 	.then(function (vehicles_thefts) {
 		data.vehicles = vehicles_thefts; 
-		return Theft.find({state: 0}).exec();
+		return Theft.find({}).exec();
 	})
 	.then(function (thefts) {
 		data.thefts = thefts;
-		return Alert.find({state: 0}).exec();
+		return Alert.find({}).exec();
 	})
 	.then(function (alerts) {
 		data.alerts = alerts;
@@ -298,7 +338,11 @@ server.get('/admin/crimes', auth.authNoSession, function crimes(req, res) {
 			result = result.sort(function (a, b) {
 				return (a.date < b.date) ? 1 : (a.date > b.date) ? -1 : 0;
 			});
-			res.render('admin', {});
+			console.log(result);
+			console.log("en admin");
+			res.render('admin', {
+				denuncias: result
+			});
 		});
 	})
 	.catch(function (error) {
@@ -326,6 +370,12 @@ server.get('/admin/agents', auth.authNoSession, function agents(req, res) {
 		});
 	});
 });
+server.get('/admin/alert/vehicle', function vehicles(req, res) {
+	res.render('alert_vehicle_admin');
+});
+server.get('/admin/alert/theft', function thefts(req, res) {
+	res.render('alert_theft_admin');
+});
 
 server.get('/user/chat', auth.authNoSession, function chat(req, res) {
 	res.render('chat');
@@ -345,7 +395,6 @@ server.get('/admin/chat', auth.authNoSession, function chatAdmin(req, res) {
 
 server.get('/user', auth.authNoSession, function user(req, res){
 	var id = req.cookies.id;
-
 	Usuario.findOne({_id: id}).select('name lastname').exec(function (error, user) {
 		var data = {};
 		var vehicles = Vehicle.find({}).exec();

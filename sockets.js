@@ -1,6 +1,11 @@
 const Message = require('./models/message');
 
+
 function Sockets(io) {
+	var parseDate = function parseDate(_date) {
+		var date = new Date(_date);
+		return date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
+	};
 	io.on('connection', function (socket) {
 		console.log("Alguien se ha conectado con Sockets");
 		socket.on('denuncia', function socket_denuncia(data) {
@@ -15,7 +20,20 @@ function Sockets(io) {
 			});
 		});
 		socket.on('message private admin', function private(data) {
-			socket.broadcast.emit('message private admin', {message: data.message, username: data.username});
+			var newMessage = new Message({
+				content: data.message,
+				username: data.username,
+				userId: data.userId,
+				destination: null
+			});
+			newMessage
+			.save()
+			.then(function (message) {
+				socket.broadcast.emit('message private admin', {message: message.content, username: message.username, userId: message.userId, destination: message.destination, created: parseDate(message.created)});
+			})
+			.catch(function () {
+				console.log(error);
+			});
 		});
 		socket.on('message', function _message(message) {
 			var chat_message = new Message({
@@ -30,6 +48,9 @@ function Sockets(io) {
 				socket.broadcast.emit('message response', new_message);
 			});
 		});
+		socket.on('confirm', function confirmComplaint(data) {
+			socket.broadcast.emit('confirm', data);
+		})
 	});
 };
 

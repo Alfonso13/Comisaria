@@ -24,6 +24,30 @@ html
 				ul(style="overflow-y: scroll;").collection#list-denuncias
 					each denuncia in denuncias
 						if denuncia.is == 'theft'
+							if denuncia.state == 2
+								li.collection-item.red.lighten-4(data-id= String(denuncia._id) data-type='theft')
+									p.no-margin
+										strong(style="font-size: 1.4em; font-weight: bold;") ALERTA FINALIZADA
+									p
+										strong Robo
+									p.no-margin
+										strong Fecha:
+										= denuncia.date
+									p.no-margin
+										strong Robo a:
+										= denuncia.theft_to
+									p.no-margin
+										strong Dirección robo:
+										= denuncia.theft_reference
+									p.no-margin
+										strong Vestimenta victimario:
+										= denuncia.victimizer_clothing
+									p.no-margin
+										strong Objeto robado:
+										= denuncia.stolen_object
+									p.no-margin
+										strong Denunciante:
+										= denuncia.whistleblower
 							if denuncia.state == 1
 								li.collection-item.teal.lighten-4(data-id= String(denuncia._id) data-type='theft')
 									p.no-margin
@@ -71,40 +95,78 @@ html
 										strong Denunciante:
 										= denuncia.whistleblower
 									a(class="waves-effect btn").confirm CONFIRMAR
-							//- if denuncia.state == 0
-							//- 	li.collection-item(data-id= String(denuncia._id) data-type='theft')	
+
 						if denuncia.is == 'theft_vehicle'
-							li.collection-item(data-id= String(denuncia._id) data-type='theft_vehicle')
-								p
-									strong H/R Vehículo
-								p.no-margin
-									strong Fecha:
-									= denuncia.date
-								p.no-margin
-									strong Modalidad:
-									= denuncia.type
-								p.no-margin
-									strong Tipo vehículo:
-									= denuncia.type_vehicle
-								p.no-margin
-									strong Marca:
-									= denuncia.brand
-								p.no-margin
-									strong Color:
-									= denuncia.color
-								p.no-margin
-									strong Placa:
-									= denuncia.plate
-								p.no-margin
-									strong Dirección:
-									= denuncia.reference
-								p.no-margin
-									strong Modo:
-									= denuncia.mode
-								p.no-margin
-									strong Denunciante:
-									= denuncia.whistleblower
-								a(class="waves-effect btn").confirm CONFIRMAR
+							//- if denuncia.state == 2
+								
+							if denuncia.state == 1
+								//- Denuncia confirmada
+								li.collection-item.teal.lighten-4(data-id= String(denuncia._id) data-type='theft_vehicle')
+									p.no-margin
+										strong(style="font-size: 1.4em; font-weight: bold;") ALERTA CONFIRMADA
+									p
+										strong H/R Vehículo
+									p.no-margin
+										strong Fecha:
+										= denuncia.date
+									p.no-margin
+										strong Modalidad:
+										= denuncia.type
+									p.no-margin
+										strong Tipo vehículo:
+										= denuncia.type_vehicle
+									p.no-margin 
+										strong Marca:
+										= denuncia.brand
+									p.no-margin
+										strong Color:
+										= denuncia.color
+									p.no-margin
+										strong Placa:
+										= denuncia.plate
+									p.no-margin
+										strong Dirección:
+										= denuncia.reference
+									p.no-margin
+										strong Modo:
+										= denuncia.mode
+									p.no-margin
+										strong Denunciante:
+										= denuncia.whistleblower
+									a(class="waves-effect btn").finalize PEDIR FINALIZACIÓN
+							if denuncia.state == 0
+								//- Denuncia no confirmada
+								li.collection-item(data-id= String(denuncia._id) data-type='theft_vehicle')
+									p
+										strong H/R Vehículo
+									p.no-margin
+										strong Fecha:
+										= denuncia.date
+									p.no-margin
+										strong Modalidad:
+										= denuncia.type
+									p.no-margin
+										strong Tipo vehículo:
+										= denuncia.type_vehicle
+									p.no-margin
+										strong Marca:
+										= denuncia.brand
+									p.no-margin
+										strong Color:
+										= denuncia.color
+									p.no-margin
+										strong Placa:
+										= denuncia.plate
+									p.no-margin
+										strong Dirección:
+										= denuncia.reference
+									p.no-margin
+										strong Modo:
+										= denuncia.mode
+									p.no-margin
+										strong Denunciante:
+										= denuncia.whistleblower
+									a(class="waves-effect btn").confirm CONFIRMAR
 						if denuncia.is == 'general'
 							//- li.collection-item
 							//- 	span.title adsfadsf

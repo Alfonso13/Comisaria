@@ -1,0 +1,75 @@
+doctype html
+html
+	head 
+		title Policia
+		link(rel='stylesheet', href='/bower_components/materialize/dist/css/materialize.css')
+		link(rel='stylesheet', href='/css/app.css')
+	body
+		include includes/sidenav.jade
+		main(style="padding-left: 250px;")
+			include includes/header.jade
+			div.row
+				div(class="col s4" style="height: 500px; overflow-y: scroll;")
+					h5.center-align ROBO O HURTO DE VEHÍCULO
+					form(name="form_denuncia", data-route='/api/vehicle_theft')#form
+						input(type="hidden" id="is" value="theft_vehicle")
+						div.row
+							div.input-field
+								select(name="type")
+									option(value="Robo") Robo
+									option(value="Hurto") Hurto
+								label H/R
+							div.input-field
+								select(name="type_vehicle")
+									option(value="Motocicleta") Motocicleta
+									option(value="Automovil") Automóvil
+									option(value="PickUp") Pick Up
+								label Tipo
+							div.input-field
+								label Marca
+								input(type="text" name="brand")
+							div.input-field
+								label Color
+								input(type="text" class="no-margin" name="color")
+							div.input-field
+								label Placa
+								input(type="text" class="no-margin" name="plate")
+							div.input-field
+								label Referencia
+								input(type="text" class="no-margin" name="reference")
+							div.input-field
+								select(name="mode")
+									option(value="Estacionado") Estacionado
+									option(value="Marcha") En marcha
+								label Modo
+							div.input-field
+								label Denunciante
+								input(type="text" class="no-margin" name="whistleblower")
+
+					div.center-align
+						a(class="waves-effect waves-light btn red")#locate LOCALIZARME
+						div(style="margin: 1em 0;")
+							h4.center-align Coordenadas
+							div
+								p Latitud:
+									strong(style="margin-left: 4px;")#latitud
+								input(type="hidden" name="latitude" required)#latitude-input
+							div
+								p Longitud:
+									strong(style="margin-left: 4px;")#longitud
+								input(type="hidden" name="longitude" required)#longitude-input
+					div.divider
+					div.center-align(style="margin-top: 1em;")
+						button(class="waves-effect waves-light btn red submit" type="submit" name="action")#save ENVIAR DENUNCIA
+				div(class="col s8")#container-map
+					div
+						div#map.map_alert
+		script(src='/bower_components/jquery/dist/jquery.js')
+		script(src='/bower_components/jquery.cookie/jquery.cookie.js')
+		script(src='/bower_components/materialize/dist/js/materialize.js')
+		script(src="//maps.google.com/maps/api/js?sensor=true&key=AIzaSyCHwwNb-e6Sk8CbsUG2t6OsOsPHOtXPoUc")
+		script(src='/bower_components/socket.io-client/socket.io.js')
+		script(src='/bower_components/jquery.serializeJSON/jquery.serializejson.js')
+		script(src='/js/gmaps.js')
+		script(src='/js/admin.js')
+		script(src='/js/globals.js')

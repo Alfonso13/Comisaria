@@ -7,6 +7,8 @@ html
 	body
 		include includes/add_police.jade
 		include includes/sidenav.jade
+		include includes/confirm_delete_agent.jade
+
 		main(style="padding-left: 250px;")
 			include includes/header.jade
 			div.fixed-action-btn(style="top: 55px; right: 24px;")
@@ -22,6 +24,8 @@ html
 									h4.no-margin.title.bold= agent.name
 									p Policía
 									p= "Ingreso: " + agent.entry
+									a(class="waves-effect waves-light btn red" style="font-size: 0.8em; padding: 0 0.4em;").deleteAgent ELIMINAR
+									a(class="waves-effect waves-light btn red" style="font-size: 0.8em; padding: 0 0.4em;margin-left: 0.4em;").changeState CAMBIAR ESTADO
 					div.col.s8
 						h5.no-margin(style="font-size: 1em; font-weight: bold;") Ubicación de agentes
 						div#map.map_agents

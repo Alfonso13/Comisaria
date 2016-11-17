@@ -12,6 +12,36 @@ $(document).ready(function ready() {
 		});
 		var markers = [];
 		if($("#map").hasClass('map_agents')) { //Es el mapa de agentes
+			$(document).on('click', '.deleteAgent', function deleteAgent(event) {
+				var $id = $(event.currentTarget).parent().attr('data-id');
+				$("#alert_confirm_delete_agent").attr('data-id', $id).openModal();
+			});
+
+			$("#true_delete").on('click', function (event) {
+				var $id = $(event.currentTarget).parent().parent().attr('data-id');
+				var xhr = $.ajax({url: '/api/user/' + $id, type: 'DELETE'});
+				xhr
+				.done(function (response) {
+					$("#list-agents li").each(function (index, $li) {
+						if($($li).attr('data-id') == $id) {
+							$($li).hide();
+							$("#alert_confirm_delete_agent").closeModal({
+								complete: function () {
+									Materialize.toast("Eliminado exitosamente", 2000);
+								}
+							});
+						}
+					});
+				})
+				.fail(function (error) {
+					console.log(error);
+				});
+			});
+
+			$(document).on('click', '.changeState', function changeState() {
+				
+			});
+
 
 			$(document).on('click', '.item-agent', function ($event) {
 				var id = $(this).attr('data-id');
@@ -52,6 +82,41 @@ $(document).ready(function ready() {
 		}
 
 		if($("#map").hasClass('map_alerts')) {
+			$(document).on('click', '.finalize', function finalize(event) {
+				var $button = $(event.currentTarget);
+				var $parent = $button.parent();
+				var id = $parent.attr('data-id');
+				var type = $parent.attr('data-type');
+				var xhr = $.ajax({url: '/api/user/' + type + '/' + id + '/state/2', type: 'PUT'});
+				xhr
+				.done(function done(response) {
+					if(response.success) {
+						$parent.removeClass('teal lighten-4').addClass('red lighten-4');
+						socket.emit('confirm', response.theft);
+						$button.hide();
+					}
+				})
+				.fail(function fail(error) {
+					console.log(error);
+				});
+			});
+			$(document).on('click', '.item-complaint', function clickComplaint() {
+				var id = $(this).attr('data-id');
+				var _markers = map.markers;
+				var marker = null;
+				for(var i = 0 ; i < _markers.length ; i++) {
+					if(_markers[i].getTitle() == id) {
+						marker = _markers[i];
+						break;
+					}
+				}
+				if(marker.getAnimation() !== null) {
+					marker.setAnimation(null);
+				}
+				else {
+					marker.setAnimation(google.maps.Animation.BOUNCE);
+				}
+			});
 			var xhr = $.get('/api/alerts');
 			xhr
 			.done(function done(response) {
@@ -59,7 +124,6 @@ $(document).ready(function ready() {
 				var thefts = response.data.thefts;
 				var alerts = response.data.alerts;
 				var markers = [];
-				
 				if(vehicles.forEach) {
 					vehicles.forEach(function (value, index) {
 						markers.push({
@@ -110,7 +174,7 @@ $(document).ready(function ready() {
 		var name = JSON.parse(localStorage["user"]).name;
 		if(message != "") {
 			//var $message = "<div class='row local'><div class='col s11 m8 offset-m2 l6 offset-l3'> <div class='card-panel grey lighten-5 z-depth-1'> <div class='row valign-wrapper'> <div class='col s3'> <img src='/images/alfonso.png' alt='' class='circle responsive-img' /> </div> <div class='col s10'> <h5 class='no-margin' style='font-weight: 600;'>" + name + "</h5><span class='black-text'> " + message + " </span> </div> </div> </div> </div></div>"
-			var $message = '<div style="margin-bottom: 0; padding-bottom: 0;" class="row local"><div class="col s11 m8 offset-m2 l6 offset-l3"><div style="box-shadow: none;margin: 0;padding: 0;" class="card-panel white"> <div class="row valign-wrapper"><div style="padding: 0.5em; border-radius: 8px;" class="col s10 red white-text"><h5 style="font-weight: 600;" class="no-margin">' + name + '</h5><span>' + message + '</span></div><div class="col s3"><img src="/images/alfonso.png" alt="" class="circle responsive-img"></div></div></div></div></div>';
+			var $message = '<div style="margin-bottom: 0; padding-bottom: 0;" class="row local"><div class="col s11 m8 offset-m2 l6 offset-l3"><div style="box-shadow: none;margin: 0;padding: 0;" class="card-panel white"> <div class="row valign-wrapper"><div style="padding: 0.5em; border-radius: 8px;" class="col s12 red white-text"><h5 style="font-weight: 600;" class="no-margin">' + name + '</h5><span>' + message + '</span></div></div></div></div></div>';
 			var $chat = $("#real-container-chat");
 			var id = null;
 			
@@ -135,7 +199,7 @@ $(document).ready(function ready() {
 	});
 
 	socket.on('message private admin', function newMessage(data) {
-		var $message = '<div class="row destination"><div class="col s11 m8 offset-m2 l6 offset-l3"><div style="box-shadow: none;margin: 0;padding: 0;" class="card-panel white"> <div class="row valign-wrapper"><div class="col s3"><img src="/images/alfonso.png" alt="" class="circle responsive-img"></div><div style="padding: 0.5em; border-radius: 8px;" class="col s10 blue white-text"> <h5 style="font-weight: 600;" class="no-margin">' + data.username + '</h5><span>' + data.message + '</span></div></div></div></div></div>'
+		var $message = '<div class="row destination"><div class="col s11 m8 offset-m2 l6 offset-l3"><div style="box-shadow: none;margin: 0;padding: 0;" class="card-panel white"> <div class="row valign-wrapper"><div style="padding: 0.5em; border-radius: 8px;" class="col s12 blue white-text"> <h5 style="font-weight: 600;" class="no-margin">' + data.username + '</h5><span>' + data.message + '</span></div></div></div></div></div>';
 		$("#real-container-chat").append($message);
 	});
 
@@ -163,6 +227,16 @@ $(document).ready(function ready() {
 			lng: data.theft.location.longitude
 		});
 	});
+
+	socket.on('confirm', function confirmComplaint(data) {
+		$("#list-denuncias li").each(function (index, $li) {
+			if($($li).attr('data-id') == data._id) {
+				$($li).addClass('teal lighten-4');
+				$($li).children(".no-confirmed").hide();
+				$($li).children("a").show();
+			}
+		});
+	});
 	
 	$(".datepicker").pickadate();
 	
@@ -181,7 +255,7 @@ $(document).ready(function ready() {
 		xhr
 		.done(function done(response) {
 			var user = response.user;
-			var $chip = "<div class='chip' data-id='"+ user._id +"'> "+ user.name + " " + user.lastname + " <img src='/images/alfonso.png' alt='Contact Person' /> <span class='close'>x</span></div>";
+			var $chip = "<div class='chip' data-id='"+ user._id +"'> "+ user.name + " " + user.lastname + " <span class='close'>x</span></div>";
 			$("#chip").html($chip);
 		})
 		.fail(function fail(error) {
@@ -201,7 +275,7 @@ $(document).ready(function ready() {
 			if(response.success) {
 				$("#add_police").closeModal();
 				Materialize.toast("Creado exitosamente", 2000);
-				var $agent = "<li class='collection-item avatar'><img src='/images/alfonso.png' class='circle'/> <h4 class='no-margin title bold'>"+ response.user.name + ' ' + response.user.lastname +"</h4> <p class='no-margin'>Policia</p> <p class='no-margin'>Ingreso: "+ response.user.entry +"</p> </li>";
+				var $agent = "<li class='collection-item avatar'><h4 class='no-margin title bold'>"+ response.user.name + ' ' + response.user.lastname +"</h4> <p class='no-margin'>Policia</p> <p class='no-margin'>Ingreso: "+ response.user.entry +"</p> </li>";
 				$("#list-agents").prepend($agent);
 			}
 		})
@@ -230,4 +304,60 @@ $(document).ready(function ready() {
 		var html = "<div class='chip'> Todos </div>";
 		$("#chip").html(html);
 	});
+
+	$("#emit_alert").on('click', function emitAlert() {
+		$("#alert_admin").openModal();
+	});
+	$("#locate").on('click', function locate() {
+		var successLocation = function successLocation(position) {
+			$("#latitud").text(position.coords.latitude);
+			$("#longitud").text(position.coords.longitude);
+			map.addMarker({
+				lat: position.coords.latitude,
+				lng: position.coords.longitude,
+				draggable: true,
+				dragend: function dragend(position) {
+					console.log(position);
+					$("#latitud").text(position.latLng.lat());
+					$("#longitud").text(position.latLng.lng());
+				}
+			});
+		};
+		var errorLocation = function errorLocation(error) {
+			console.log(error);
+		};
+		navigator.geolocation.getCurrentPosition(successLocation, errorLocation, {enableHighAccuracy: true});
+	});
+	$("#save").on('click', function save() {
+		var $form = $("#form");
+		var serialize = $form.serializeJSON();
+		var route = $form.attr('data-route');
+		var is = $("#is").val();
+
+		serialize.location = {
+			latitude: $("#latitud").text(),
+			longitude: $("#longitud").text()
+		};
+		serialize.user = JSON.parse(localStorage.user)._id;
+		serialize.state = 0;
+		serialize.is = is;
+
+		//var xhr = $.post(api + '/api/complaint', serialize);
+		var xhr = $.post(route, serialize);
+		xhr
+		.done(function done(response) {
+			$("#latitud").text("");
+			$("#longitud").text("");
+			socket.emit('denuncia', {theft: response.theft, type: response.type});
+			
+			document.form_denuncia.reset();
+			Materialize.toast(response.message, 1200, null, function () {
+				window.location.href = "/admin/crimes";
+			});
+		})
+		.fail(function fail() {
+			console.log(arguments);
+		});
+	});
+	$('select').material_select();
 });
