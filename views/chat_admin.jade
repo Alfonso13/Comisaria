@@ -21,7 +21,6 @@ html
 											a(class="waves-effect waves-light btn blue lighten-1" style="font-size: 0.8em; padding: 0 1em; margin-top: 0em;")#general_message ENVIAR MENSAJE
 									each agent in agents
 										li.collection-item.avatar(data-id= String(agent._id))
-											img(src="/images/alfonso.png").circle
 											span.title(style="font-weight: bold;")= agent.name
 											div
 												a(class="waves-effect waves-light btn blue lighten-1 send-agent-message" style="font-size: 0.8em; padding: 0 1em; margin-top: 0em;") ENVIAR MENSAJE
@@ -38,7 +37,6 @@ html
 						div.content-agent-message(style="margin-top: 1em;")#chip
 							div.chip
 								| Todos
-								// img(src="/images/alfonso.png", alt="Contact Person") 
 						div#container-chat(style="height: 350px;overflow-x: hidden;overflow-y: scroll;")
 							div#real-container-chat
 								
