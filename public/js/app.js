@@ -134,8 +134,8 @@ $(document).ready(function _load() {
 			serialize.state = 0;
 			serialize.is = is;
 
-			var xhr = $.post(api + '/api/complaint', serialize);
-			//var xhr = $.post(route, serialize);
+			//var xhr = $.post(api + '/api/complaint', serialize);
+			var xhr = $.post(api + route, serialize);
 			xhr
 			.done(function done(response) {
 				document.form_denuncia.reset();
